@@ -2,8 +2,14 @@ module Certmeister
 
   class Config
 
+    attr_reader :ca_cert, :ca_key, :store, :authenticator
+
     def initialize(options)
       @options = options
+      @ca_cert = options[:ca_cert]
+      @ca_key = options[:ca_key]
+      @store = options[:store]
+      @authenticator = options[:authenticator]
       @errors = {}
     end
 

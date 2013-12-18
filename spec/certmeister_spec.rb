@@ -44,6 +44,11 @@ describe Certmeister::Config do
         config_option_must_name_existing_file(:ca_cert)
       end
 
+      it "is accessible" do
+        config = Certmeister::Config.new(options)
+        expect(config.ca_cert).to eql options[:ca_cert]
+      end
+
     end
 
     describe ":ca_key" do
@@ -54,6 +59,11 @@ describe Certmeister::Config do
 
       it "must name an existing CA key file" do
         config_option_must_name_existing_file(:ca_key)
+      end
+
+      it "is accessible" do
+        config = Certmeister::Config.new(options)
+        expect(config.ca_key).to eql options[:ca_key]
       end
 
     end
@@ -88,6 +98,11 @@ describe Certmeister::Config do
         expect(config.errors[:store]).to eql "must provide a nullary health_check method"
       end
 
+      it "is accessible" do
+        config = Certmeister::Config.new(options)
+        expect(config.store).to eql options[:store]
+      end
+
     end
 
     describe ":authenticator" do
@@ -106,6 +121,11 @@ describe Certmeister::Config do
         config = Certmeister::Config.new(options)
         expect(config).to_not be_valid
         expect(config.errors[:authenticator]).to eql "must be a unary callable if given"
+      end
+
+      it "is accessible" do
+        config = Certmeister::Config.new(options)
+        expect(config.authenticator).to eql options[:authenticator]
       end
 
     end
