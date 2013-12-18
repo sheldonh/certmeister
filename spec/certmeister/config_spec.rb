@@ -1,15 +1,11 @@
 require 'spec_helper'
+require 'helpers/certmeister_config_helper'
 
 require 'certmeister'
 
 describe Certmeister::Config do
 
-  class ValidStore
-    def store(cn, crt); end
-    def fetch(cn); end
-    def health_check(cn); end
-  end
-  let(:options) { {ca_cert: 'fixtures/ca.crt', ca_key: 'fixtures/ca.key', store: ValidStore.new, authenticator: -> (request) {true} } }
+  let(:options) { CertmeisterConfigHelper::valid_config_options }
 
   def config_option_is_required(option)
     options.delete(option)
@@ -124,6 +120,24 @@ describe Certmeister::Config do
     it "is accessible" do
       config = Certmeister::Config.new(options)
       expect(config.authenticator).to eql options[:authenticator]
+    end
+
+  end
+
+  describe "error_list" do
+
+    it "is empty if the config has no errors" do
+      config = Certmeister::Config.new(options)
+      config.valid?
+      expect(config.error_list).to be_empty
+    end
+
+    it "includes one string (option and message) per error if the config has errors" do
+      options.delete(:ca_cert)
+      options.delete(:ca_key)
+      config = Certmeister::Config.new(options)
+      config.valid?
+      expect(config.error_list).to match_array ["ca_cert is required", "ca_key is required"]
     end
 
   end

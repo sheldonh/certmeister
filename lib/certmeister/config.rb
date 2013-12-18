@@ -22,6 +22,12 @@ module Certmeister
       @errors
     end
 
+    def error_list
+      @errors.keys.sort.inject([]) do |list, option|
+        list << "#{option} #{@errors[option]}"
+      end
+    end
+
     private
 
     def validate
