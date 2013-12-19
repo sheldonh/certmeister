@@ -46,7 +46,7 @@ describe Certmeister::InMemoryStore do
 
     it "fetch raises Certmeister::StoreException when broken" do
       subject.send(:break!)
-      expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreException)
+      expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreException, "in-memory store is broken")
     end
 
   end

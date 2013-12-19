@@ -10,12 +10,12 @@ module Certmeister
     end
 
     def store(cn, cert)
-      raise Certmeister::StoreException if !@healthy
+      fail_if_unhealthy
       @certs[cn] = cert
     end
 
     def fetch(cn)
-      raise Certmeister::StoreException if !@healthy
+      fail_if_unhealthy
       @certs[cn]
     end
 
@@ -27,6 +27,10 @@ module Certmeister
 
     def break!
       @healthy = false
+    end
+
+    def fail_if_unhealthy
+      raise Certmeister::StoreException.new("in-memory store is broken") if !@healthy
     end
 
   end

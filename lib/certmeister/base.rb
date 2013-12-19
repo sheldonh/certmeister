@@ -7,10 +7,10 @@ module Certmeister
 
     def initialize(config)
       if config.valid?
-        @config = config
         @authenticator = config.authenticator
         @ca_cert = config.ca_cert
         @ca_key = config.ca_key
+        @store = config.store
         @openssl_digest = config.openssl_digest
       else
         raise RuntimeError.new("invalid config")
@@ -28,7 +28,14 @@ module Certmeister
           error = "invalid CSR (#{e.message})"
         else
           if get_cn(csr) == request[:cn]
-            pem = create_signed_certificate(csr).to_pem
+            signed = create_signed_certificate(csr).to_pem
+            begin
+              @store.store(request[:cn], signed)
+            rescue Certmeister::StoreException => e
+              error = "certificate could not be stored (#{e.message})"
+            else
+              pem = signed
+            end
           else
             error = "CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})"
           end

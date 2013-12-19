@@ -46,6 +46,15 @@ describe Certmeister do
         expect(response.error).to eql "CSR subject (axl.hetzner.africa) disagrees with request CN (monkeyface.example.com)"
       end
 
+      it "refuses to return a signed certificate if it could not be stored" do
+        config = CertmeisterConfigHelper::valid_config
+        config.store.send(:break!)
+        ca = Certmeister.new(config)
+        response = ca.sign(valid_request)
+        expect(response).to_not be_signed
+        expect(response.error).to eql "certificate could not be stored (in-memory store is broken)"
+      end
+
     end
 
     describe "signing" do
@@ -79,6 +88,14 @@ describe Certmeister do
         expect(cert.not_before).to be >= now
         expect(cert.not_after - cert.not_before).to be < (5 * 365 * 24 * 60 * 60 + 2)
         expect(cert.not_after - cert.not_before).to be >= (5 * 365 * 24 * 60 * 60)
+      end
+
+      it "stores the signed certificate, indexed on request CN" do
+        config = CertmeisterConfigHelper::valid_config
+        ca = Certmeister.new(config)
+        response = ca.sign(valid_request)
+        stored = config.store.fetch('axl.hetzner.africa')
+        expect(stored).to eql response.pem
       end
 
     end

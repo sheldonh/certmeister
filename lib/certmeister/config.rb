@@ -87,7 +87,7 @@ module Certmeister
         @errors[option] = "must provide a binary store method"
       elsif not o.respond_to?(:fetch) or o.method(:fetch).arity != 1
         @errors[option] = "must provide a unary fetch method"
-      elsif not o.respond_to?(:health_check) or o.method(:health_check).arity != 1
+      elsif not o.respond_to?(:health_check) or o.method(:health_check).arity != 0
         @errors[option] = "must provide a nullary health_check method"
       end
     end
