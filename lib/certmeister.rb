@@ -1,8 +1,9 @@
 module Certmeister
 end
 
-require "certmeister/base"
-require "certmeister/config"
+Dir.glob(File.join(File.dirname(__FILE__), "certmeister", "*.rb")) do |path|
+  require path
+end
 
 module Certmeister
 
