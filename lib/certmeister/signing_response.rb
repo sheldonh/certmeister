@@ -1,6 +1,6 @@
 module Certmeister
 
-  class Response
+  class SigningResponse
 
     def initialize(pem, error = nil)
       @pem = pem

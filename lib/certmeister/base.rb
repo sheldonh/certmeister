@@ -35,7 +35,7 @@ module Certmeister
       else
         error = "request could not be authenticated"
       end
-      Certmeister::Response.new(pem, error)
+      Certmeister::SigningResponse.new(pem, error)
     end
 
     private
