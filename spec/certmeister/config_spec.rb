@@ -14,6 +14,22 @@ describe Certmeister::Config do
     expect(config.errors[option]).to eql "is required"
   end
 
+  def config_option_provides_method_with_arity(option, method, arity)
+    arity_name = case arity
+                 when 0 then "nullary"
+                 when 1 then "unary"
+                 when 2 then "binary"
+                 when 3 then "ternary"
+                 else
+                   raise "broken test helper does not support arity #{4}"
+                 end
+    options[option].send(:define_singleton_method, method) { |wrong, number, of, arguments| }
+
+    config = Certmeister::Config.new(options)
+    expect(config).to_not be_valid
+    expect(config.errors[option]).to eql "must provide a #{arity_name} #{method} method"
+  end
+
   it "does not allow unknown options" do
     options[:unknown] = 1
     config = Certmeister::Config.new(options)
@@ -68,27 +84,15 @@ describe Certmeister::Config do
     end
 
     it "must provide a binary store method" do
-      options[:store].send(:define_singleton_method, :store) { |wrong, number, of, arguments| }
-
-      config = Certmeister::Config.new(options)
-      expect(config).to_not be_valid
-      expect(config.errors[:store]).to eql "must provide a binary store method"
+      config_option_provides_method_with_arity(:store, :store, 2)
     end
 
     it "must provide a unary fetch method" do
-      options[:store].send(:define_singleton_method, :fetch) { |wrong, number, of, arguments| }
-
-      config = Certmeister::Config.new(options)
-      expect(config).to_not be_valid
-      expect(config.errors[:store]).to eql "must provide a unary fetch method"
+      config_option_provides_method_with_arity(:store, :fetch, 1)
     end
 
     it "must provide a nullary health_check method" do
-      options[:store].send(:define_singleton_method, :health_check) { |wrong, number, of, arguments| }
-
-      config = Certmeister::Config.new(options)
-      expect(config).to_not be_valid
-      expect(config.errors[:store]).to eql "must provide a nullary health_check method"
+      config_option_provides_method_with_arity(:store, :health_check, 0)
     end
 
     it "is accessible" do
@@ -100,20 +104,19 @@ describe Certmeister::Config do
 
   describe ":authenticator" do
 
-    it "is optional" do
-      config = Certmeister::Config.new(options)
-      expect(config).to be_valid
-
-      options.delete(:authenticator)
-      config = Certmeister::Config.new(options)
-      expect(config).to be_valid
+    it "is required" do
+      config_option_is_required(:authenticator)
     end
 
-    it "must provide a unary callable if given" do
-      options[:authenticator] = -> {:bad_arity}
+    it "must provide a unary authenticate method" do
+      config_option_provides_method_with_arity(:authenticator, :authenticate, 1)
+    end
+
+    it "must refuse an empty request" do
+      options[:authenticator] = Certmeister::BrokenAuthenticator.new
       config = Certmeister::Config.new(options)
       expect(config).to_not be_valid
-      expect(config.errors[:authenticator]).to eql "must be a unary callable if given"
+      expect(config.errors[:authenticator]).to eql "authenticator violates API"
     end
 
     it "is accessible" do

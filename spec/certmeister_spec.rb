@@ -20,11 +20,11 @@ describe Certmeister do
 
     it "refuses the request if the authenticator declines it" do
       options = CertmeisterConfigHelper::valid_config_options
-      options[:authenticator] = -> (request) { false }
+      options[:authenticator] = Certmeister::BlackholeAuthenticator.new
       ca = Certmeister.new(Certmeister::Config.new(options))
       response = ca.sign(valid_request)
       expect(response).to_not be_signed
-      expect(response.error).to eql "request could not be authenticated"
+      expect(response.error).to eql "request refused (blackholed)"
     end
 
     it "signs a CSR if the authenticator passes the request" do

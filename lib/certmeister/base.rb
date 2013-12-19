@@ -20,7 +20,8 @@ module Certmeister
     def sign(request)
       pem = nil
       error = nil
-      if @authenticator.call(request)
+      authentication = @authenticator.authenticate(request)
+      if authentication.authenticated?
         begin
           csr = OpenSSL::X509::Request.new(request[:csr])
         rescue OpenSSL::OpenSSLError => e
@@ -33,7 +34,7 @@ module Certmeister
           end
         end
       else
-        error = "request could not be authenticated"
+        error = "request refused (#{authentication.error})"
       end
       Certmeister::SigningResponse.new(pem, error)
     end

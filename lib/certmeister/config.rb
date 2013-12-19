@@ -50,7 +50,7 @@ module Certmeister
       validate_x509_pem(:ca_cert)
       validate_pkey_pem(:ca_key)
       validate_store(:store)
-      validate_unary_callable(:authenticator)
+      validate_authenticator(:authenticator)
       validate_openssl_digest
       validate_known_options
     end
@@ -92,10 +92,17 @@ module Certmeister
       end
     end
 
-    def validate_unary_callable(option)
+    def validate_authenticator(option)
       o = @options[option]
-      if o and not (o.respond_to?(:call) and o.respond_to?(:arity) and o.arity == 1)
-        @errors[option] = "must be a unary callable if given"
+      if not o
+        @errors[option] = "is required"
+      elsif not o.respond_to?(:authenticate) or o.method(:authenticate).arity != 1
+        @errors[option] = "must provide a unary authenticate method"
+      else
+        response = o.authenticate({})
+        if not (response.respond_to?(:authenticated?) and !response.authenticated? and response.error)
+          @errors[option] = "authenticator violates API"
+        end
       end
     end
 
