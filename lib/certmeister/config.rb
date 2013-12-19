@@ -1,3 +1,5 @@
+require 'openssl'
+
 module Certmeister
 
   class Config
@@ -31,11 +33,23 @@ module Certmeister
     private
 
     def validate
-      validate_required_file(:ca_cert)
+      validate_x509_pem(:ca_cert)
       validate_required_file(:ca_key)
       validate_store(:store)
       validate_unary_callable(:authenticator)
       validate_known_options
+    end
+
+    def validate_x509_pem(option)
+      if not @options[option]
+        @errors[option] = "is required"
+      else
+        begin
+          OpenSSL::X509::Certificate.new(@options[option])
+        rescue OpenSSL::OpenSSLError => e
+          @errors[option] = "must be a PEM-encoded x509 certificate (#{e.message})"
+        end
+      end
     end
 
     def validate_required_file(option)

@@ -7,7 +7,8 @@ module CertmeisterConfigHelper
   end
 
   def self.valid_config_options
-    {ca_cert: 'fixtures/ca.crt', ca_key: 'fixtures/ca.key', store: ValidStore.new, authenticator: -> (request) {true} }
+    ca_cert = File.read('fixtures/ca.crt')
+    {ca_cert: ca_cert, ca_key: 'fixtures/ca.key', store: ValidStore.new, authenticator: -> (request) {true} }
   end
 
   def self.valid_config

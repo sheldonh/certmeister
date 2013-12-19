@@ -35,7 +35,10 @@ describe Certmeister::Config do
     end
 
     it "must name an existing CA certificate file" do
-      config_option_must_name_existing_file(:ca_cert)
+      options[:ca_cert] = "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----\n"
+      config = Certmeister::Config.new(options)
+      expect(config).to_not be_valid
+      expect(config.errors[:ca_cert]).to eql "must be a PEM-encoded x509 certificate (nested asn1 error)"
     end
 
     it "is accessible" do
@@ -51,7 +54,7 @@ describe Certmeister::Config do
       config_option_is_required(:ca_key)
     end
 
-    it "must name an existing CA key file" do
+    it "must be a string containing an x509 certificate in PEM encoding" do
       config_option_must_name_existing_file(:ca_key)
     end
 
