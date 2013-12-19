@@ -1,3 +1,5 @@
+require 'certmeister/authentication_response'
+
 module Certmeister
 
   class NoopAuthenticator

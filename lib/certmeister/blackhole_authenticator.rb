@@ -1,8 +1,14 @@
+require 'certmeister/authentication_response'
+
 module Certmeister
 
   class BlackholeAuthenticator
     def authenticate(request)
-      Certmeister::AuthenticationResponse.new(false, "blackholed")
+      if request.empty?
+        Certmeister::AuthenticationResponse.new(false, "empty request")
+      else
+        Certmeister::AuthenticationResponse.new(false, "blackholed")
+      end
     end
   end
 

@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'helpers/certmeister_config_helper'
+require 'helpers/certmeister_authenticator_helper'
 
 require 'certmeister'
 
@@ -113,7 +114,7 @@ describe Certmeister::Config do
     end
 
     it "must refuse an empty request" do
-      options[:authenticator] = Certmeister::BrokenAuthenticator.new
+      options[:authenticator] = CertmeisterAuthenticatorHelper::BrokenAuthenticator.new
       config = Certmeister::Config.new(options)
       expect(config).to_not be_valid
       expect(config.errors[:authenticator]).to eql "authenticator violates API"
