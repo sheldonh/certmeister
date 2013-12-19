@@ -34,7 +34,7 @@ module Certmeister
 
     def validate
       validate_x509_pem(:ca_cert)
-      validate_required_file(:ca_key)
+      validate_pkey_pem(:ca_key)
       validate_store(:store)
       validate_unary_callable(:authenticator)
       validate_known_options
@@ -52,11 +52,15 @@ module Certmeister
       end
     end
 
-    def validate_required_file(option)
+    def validate_pkey_pem(option)
       if not @options[option]
         @errors[option] = "is required"
-      elsif not File.exists?(@options[option])
-        @errors[option] = "must name an existing file"
+      else
+        begin
+          OpenSSL::PKey.read(@options[option])
+        rescue ArgumentError => e
+          @errors[option] = "must be a PEM-encoded private key (#{e.message})"
+        end
       end
     end
 

@@ -14,13 +14,6 @@ describe Certmeister::Config do
     expect(config.errors[option]).to eql "is required"
   end
 
-  def config_option_must_name_existing_file(option)
-    options[option] = "/nosuchfile"
-    config = Certmeister::Config.new(options)
-    expect(config).to_not be_valid
-    expect(config.errors[option]).to eql "must name an existing file"
-  end
-
   it "does not allow unknown options" do
     options[:unknown] = 1
     config = Certmeister::Config.new(options)
@@ -55,7 +48,10 @@ describe Certmeister::Config do
     end
 
     it "must be a string containing an x509 certificate in PEM encoding" do
-      config_option_must_name_existing_file(:ca_key)
+      options[:ca_key] = "-----BEGIN RSA PRIVATE KEY-----\n-----END RSA PRIVATE KEY-----\n"
+      config = Certmeister::Config.new(options)
+      expect(config).to_not be_valid
+      expect(config.errors[:ca_key]).to eql "must be a PEM-encoded private key (Could not parse PKey)"
     end
 
     it "is accessible" do
