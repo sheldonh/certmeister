@@ -27,16 +27,16 @@ describe Certmeister::Config do
       config_option_is_required(:ca_cert)
     end
 
-    it "must name an existing CA certificate file" do
+    it "must be a PEM-encoded x509 certificate" do
       options[:ca_cert] = "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----\n"
       config = Certmeister::Config.new(options)
       expect(config).to_not be_valid
       expect(config.errors[:ca_cert]).to eql "must be a PEM-encoded x509 certificate (nested asn1 error)"
     end
 
-    it "is accessible" do
+    it "is accessible as an OpenSSL::X509::Certificate object" do
       config = Certmeister::Config.new(options)
-      expect(config.ca_cert).to eql options[:ca_cert]
+      expect(config.ca_cert).to be_a(OpenSSL::X509::Certificate)
     end
 
   end
@@ -54,9 +54,9 @@ describe Certmeister::Config do
       expect(config.errors[:ca_key]).to eql "must be a PEM-encoded private key (Could not parse PKey)"
     end
 
-    it "is accessible" do
+    it "is accessible as an OpenSSL::PKey::PKey object" do
       config = Certmeister::Config.new(options)
-      expect(config.ca_key).to eql options[:ca_key]
+      expect(config.ca_key).to be_a(OpenSSL::PKey::PKey)
     end
 
   end
