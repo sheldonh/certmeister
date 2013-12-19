@@ -21,6 +21,14 @@ module Certmeister
       @ca_key ||= OpenSSL::PKey.read(@options[:ca_key])
     end
 
+    def openssl_digest
+      if OpenSSL::Digest.const_defined?('SHA256')
+        @digest = OpenSSL::Digest::SHA256
+      elsif OpenSSL::Digest.const_defined?('SHA1')
+        @digest = OpenSSL::Digest::SHA1
+      end
+    end
+
     def valid?
       validate
       @errors.empty?
@@ -43,6 +51,7 @@ module Certmeister
       validate_pkey_pem(:ca_key)
       validate_store(:store)
       validate_unary_callable(:authenticator)
+      validate_openssl_digest
       validate_known_options
     end
 
@@ -87,6 +96,12 @@ module Certmeister
       o = @options[option]
       if o and not (o.respond_to?(:call) and o.respond_to?(:arity) and o.arity == 1)
         @errors[option] = "must be a unary callable if given"
+      end
+    end
+
+    def validate_openssl_digest
+      if not openssl_digest
+        @errors[:openssl_digest] = "can't find FIPS 140-2 compliant algorithm in OpenSSL::Digest"
       end
     end
 

@@ -141,4 +141,20 @@ describe Certmeister::Config do
 
   end
 
+  describe "openssl_digest" do
+
+    it "causes a validation failure if the OpenSSL library doesn't provide one" do
+      expect(OpenSSL::Digest).to receive(:const_defined?).twice.and_return(nil)
+      config = Certmeister::Config.new(options)
+      expect(config).to_not be_valid
+      expect(config.errors[:openssl_digest]).to eql "can't find FIPS 140-2 compliant algorithm in OpenSSL::Digest"
+    end
+
+    it "is accessible without being supplied" do
+      config = Certmeister::Config.new(options)
+      expect([OpenSSL::Digest::SHA256, OpenSSL::Digest::SHA1]).to include(config.openssl_digest)
+    end
+
+  end
+
 end
