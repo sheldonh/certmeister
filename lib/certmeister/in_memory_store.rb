@@ -1,3 +1,5 @@
+require 'certmeister/store_exception'
+
 module Certmeister
 
   class InMemoryStore
@@ -8,10 +10,12 @@ module Certmeister
     end
 
     def store(cn, cert)
+      raise Certmeister::StoreException if !@healthy
       @certs[cn] = cert
     end
 
     def fetch(cn)
+      raise Certmeister::StoreException if !@healthy
       @certs[cn]
     end
 

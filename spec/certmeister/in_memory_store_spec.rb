@@ -37,5 +37,19 @@ describe Certmeister::InMemoryStore do
     expect(subject.health_check).to be_false
   end
 
+  describe "for use in testing" do
+
+    it "store raises Certmeister::StoreException when broken" do
+      subject.send(:break!)
+      expect { subject.store('axl.hetzner.africa', "first") }.to raise_error(Certmeister::StoreException)
+    end
+
+    it "fetch raises Certmeister::StoreException when broken" do
+      subject.send(:break!)
+      expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreException)
+    end
+
+  end
+
 end
 
