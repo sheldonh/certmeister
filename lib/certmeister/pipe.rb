@@ -5,9 +5,10 @@ module Certmeister
     def self.command(command, stdin)
       IO.popen(command, "a+") do |io|
         reader = Thread.new { io.read }
-        writer = Thread.new { io.write(stdin); io.flush }
-        writer.join
+        io.flush
         sleep(0)
+        writer = Thread.new { io.write(stdin) }
+        writer.join
         io.close_write
         reader.value
       end
