@@ -1,5 +1,7 @@
 require 'openssl'
 
+require 'certmeister/authenticator'
+
 module Certmeister
 
   class Config
@@ -96,13 +98,10 @@ module Certmeister
       o = @options[option]
       if not o
         @errors[option] = "is required"
-      elsif not o.respond_to?(:authenticate) or o.method(:authenticate).arity != 1
+      elsif not Certmeister::Authenticator.validate_authenticate_signature(@options[option])
         @errors[option] = "must provide a unary authenticate method"
-      else
-        response = o.authenticate({})
-        if not (response.respond_to?(:authenticated?) and !response.authenticated? and response.error)
-          @errors[option] = "authenticator violates API"
-        end
+      elsif not Certmeister::Authenticator.validate_authenticate_refuses_empty(@options[option])
+        @errors[option] = "authenticator violates API"
       end
     end
 
