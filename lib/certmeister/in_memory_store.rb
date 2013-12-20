@@ -1,4 +1,4 @@
-require 'certmeister/store_exception'
+require 'certmeister/store_error'
 
 module Certmeister
 
@@ -30,7 +30,7 @@ module Certmeister
     end
 
     def fail_if_unhealthy
-      raise Certmeister::StoreException.new("in-memory store is broken") if !@healthy
+      raise Certmeister::StoreError.new("in-memory store is broken") if !@healthy
     end
 
   end

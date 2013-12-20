@@ -39,14 +39,14 @@ describe Certmeister::InMemoryStore do
 
   describe "for use in testing" do
 
-    it "store raises Certmeister::StoreException when broken" do
+    it "store raises Certmeister::StoreError when broken" do
       subject.send(:break!)
-      expect { subject.store('axl.hetzner.africa', "first") }.to raise_error(Certmeister::StoreException)
+      expect { subject.store('axl.hetzner.africa', "first") }.to raise_error(Certmeister::StoreError)
     end
 
-    it "fetch raises Certmeister::StoreException when broken" do
+    it "fetch raises Certmeister::StoreError when broken" do
       subject.send(:break!)
-      expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreException, "in-memory store is broken")
+      expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreError, "in-memory store is broken")
     end
 
   end

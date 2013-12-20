@@ -46,15 +46,6 @@ describe Certmeister do
         expect(response.error).to eql "CSR subject (axl.hetzner.africa) disagrees with request CN (monkeyface.example.com)"
       end
 
-      it "refuses to return a signed certificate if it could not be stored" do
-        config = CertmeisterConfigHelper::valid_config
-        config.store.send(:break!)
-        ca = Certmeister.new(config)
-        response = ca.sign(valid_request)
-        expect(response).to_not be_signed
-        expect(response.error).to eql "certificate could not be stored (in-memory store is broken)"
-      end
-
     end
 
     describe "signing" do
@@ -98,6 +89,42 @@ describe Certmeister do
         expect(stored).to eql response.pem
       end
 
+      it "does not capture errors from the store" do
+        config = CertmeisterConfigHelper::valid_config
+        config.store.send(:break!)
+        ca = Certmeister.new(config)
+        expect { ca.sign(valid_request) }.to raise_error(Certmeister::StoreError)
+      end
+
+    end
+
+  end
+
+  describe "#fetch(cn)" do
+
+    it "returns nil if the store has no certificate for the cn" do
+      ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+      expect(ca.fetch('axl.starjuice.net')).to be_nil
+    end
+
+    it "returns the certificate as a PEM-encoded string when the store has a certificate for the cn" do
+      config = CertmeisterConfigHelper::valid_config
+      config.store.store('axl.starjuice.net', '...')
+      ca = Certmeister.new(config)
+      expect(ca.fetch('axl.starjuice.net')).to eql '...'
+    end
+
+    class StoreWithBrokenFetch
+      def store(cn, cert); end
+      def fetch(cn); raise Certmeister::StoreError.new("simulated error"); end
+      def health_check; end
+    end
+
+    it "does not capture errors from the store" do
+      config = CertmeisterConfigHelper::valid_config
+      config.store.send(:break!)
+      ca = Certmeister.new(config)
+      expect { ca.fetch('axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
     end
 
   end

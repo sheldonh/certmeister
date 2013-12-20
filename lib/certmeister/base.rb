@@ -28,14 +28,8 @@ module Certmeister
           error = "invalid CSR (#{e.message})"
         else
           if get_cn(csr) == request[:cn]
-            signed = create_signed_certificate(csr).to_pem
-            begin
-              @store.store(request[:cn], signed)
-            rescue Certmeister::StoreException => e
-              error = "certificate could not be stored (#{e.message})"
-            else
-              pem = signed
-            end
+            pem = create_signed_certificate(csr).to_pem
+            @store.store(request[:cn], pem)
           else
             error = "CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})"
           end
@@ -44,6 +38,10 @@ module Certmeister
         error = "request refused (#{authentication.error})"
       end
       Certmeister::SigningResponse.new(pem, error)
+    end
+
+    def fetch(cn)
+      @store.fetch(cn)
     end
 
     private
