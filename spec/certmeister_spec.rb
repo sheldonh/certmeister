@@ -23,7 +23,7 @@ describe Certmeister do
 
       it "refuses the request if the authenticator declines it" do
         options = CertmeisterConfigHelper::valid_config_options
-        options[:authenticator] = Certmeister::BlackholeAuthenticator.new
+        options[:authenticator] = Certmeister::Authenticator::Blackhole.new
         ca = Certmeister.new(Certmeister::Config.new(options))
         response = ca.sign(valid_request)
         expect(response).to_not be_signed

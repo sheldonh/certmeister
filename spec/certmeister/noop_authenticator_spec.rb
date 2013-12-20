@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-require 'certmeister/noop_authenticator'
+require 'certmeister/authenticator/noop'
 
-describe Certmeister::NoopAuthenticator do
+describe Certmeister::Authenticator::Noop do
 
   it "demands a request" do
     expect { subject.authenticate }.to raise_error(ArgumentError)

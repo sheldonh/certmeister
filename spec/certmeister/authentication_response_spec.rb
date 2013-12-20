@@ -1,18 +1,18 @@
 require 'spec_helper'
 
-require 'certmeister/authentication_response'
+require 'certmeister/authenticator/response'
 
-describe Certmeister::AuthenticationResponse do
+describe Certmeister::Authenticator::Response do
 
   describe "on error" do
 
     it "is not authenticated" do
-      response = Certmeister::AuthenticationResponse.new(nil, "you smell wrong")
+      response = Certmeister::Authenticator::Response.new(nil, "you smell wrong")
       expect(response).to_not be_authenticated
     end
 
     it "provides the error" do
-      response = Certmeister::AuthenticationResponse.new(nil, "you smell wrong")
+      response = Certmeister::Authenticator::Response.new(nil, "you smell wrong")
       expect(response.error).to eql "you smell wrong"
     end
 
@@ -21,12 +21,12 @@ describe Certmeister::AuthenticationResponse do
   describe "on success" do
 
     it "is authenticated" do
-      response = Certmeister::AuthenticationResponse.new(true, nil)
+      response = Certmeister::Authenticator::Response.new(true, nil)
       expect(response).to be_authenticated
     end
 
     it "provides no error" do
-      response = Certmeister::AuthenticationResponse.new(true, nil)
+      response = Certmeister::Authenticator::Response.new(true, nil)
       expect(response.error).to be_nil
     end
 

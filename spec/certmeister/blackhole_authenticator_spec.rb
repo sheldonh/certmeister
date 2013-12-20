@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'helpers/certmeister_signing_request_helper'
 
-require 'certmeister/blackhole_authenticator'
+require 'certmeister/authenticator/blackhole'
 
-describe Certmeister::BlackholeAuthenticator do
+describe Certmeister::Authenticator::Blackhole do
 
   it "demands a request" do
     expect { subject.authenticate }.to raise_error(ArgumentError)

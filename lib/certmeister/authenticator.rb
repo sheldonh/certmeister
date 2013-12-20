@@ -14,3 +14,8 @@ module Certmeister
   end
 
 end
+
+Dir.glob(File.join(File.dirname(__FILE__), "authenticator", "*.rb")) do |path|
+  require path
+end
+

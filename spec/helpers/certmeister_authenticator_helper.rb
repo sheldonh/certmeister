@@ -5,7 +5,7 @@ module CertmeisterAuthenticatorHelper
   class BrokenAuthenticator
 
     def authenticate(request)
-      Certmeister::AuthenticationResponse.new(true, nil)
+      Certmeister::Authenticator::Response.new(true, nil)
     end
 
   end
