@@ -4,8 +4,10 @@ require 'certmeister/in_memory_store'
 
 describe Certmeister::InMemoryStore do
 
-  it "accepts initialization options" do
-    expect {Certmeister::InMemoryStore.new({}) }.to_not raise_error
+  it "can be initialized with an existing data set" do
+    existing = {'axl.hetzner.africa' => '...cert...'}
+    store = Certmeister::InMemoryStore.new(existing)
+    expect(store.fetch('axl.hetzner.africa')).to eql '...cert...'
   end
 
   it "stores certificates by CN (common name)" do

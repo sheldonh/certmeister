@@ -4,8 +4,8 @@ module Certmeister
 
   class InMemoryStore
 
-    def initialize(options = nil)
-      @certs = {}
+    def initialize(certs = {})
+      @certs = certs
       @healthy = true
     end
 
