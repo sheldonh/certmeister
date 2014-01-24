@@ -30,6 +30,16 @@ describe Certmeister::InMemoryStore do
     expect(subject.fetch('axl.hetzner.africa')).to eql "second"
   end
 
+  it "deletes certificates by CN (common name)" do
+    subject.store('axl.hetzner.africa', "cert")
+    expect(subject.remove('axl.hetzner.africa')).to be_true
+    expect(subject.fetch('axl.hetzner.africa')).to be_nil
+  end
+
+  it "returns false when removing a non-existent CN" do
+    expect(subject.remove('axl.hetzner.africa')).to be_false
+  end
+
   it "returns true from health_check when healthy" do
     expect(subject.health_check).to be_true
   end
@@ -49,6 +59,11 @@ describe Certmeister::InMemoryStore do
     it "fetch raises Certmeister::StoreError when broken" do
       subject.send(:break!)
       expect { subject.fetch('axl.hetzner.africa') }.to raise_error(Certmeister::StoreError, "in-memory store is broken")
+    end
+
+    it "remove raises Certmeister::StoreError when broken" do
+      subject.send(:break!)
+      expect { subject.remove('axl.hetzner.africa') }.to raise_error(Certmeister::StoreError, "in-memory store is broken")
     end
 
   end

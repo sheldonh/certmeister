@@ -129,5 +129,36 @@ describe Certmeister do
 
   end
 
+  describe "#remove(cn)" do
+
+    it "returns true is the certificate existed in the store" do
+      config = CertmeisterConfigHelper::valid_config
+      config.store.store('axl.starjuice.net', '...')
+      ca = Certmeister.new(config)
+      expect(ca.remove('axl.starjuice.net')).to eql true
+    end
+
+    it "returns false if the certificate did not exist in the store" do
+      ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+      expect(ca.remove('axl.starjuice.net')).to be_false
+    end
+
+    it "removes the certificate from the store" do
+      config = CertmeisterConfigHelper::valid_config
+      config.store.store('axl.starjuice.net', '...')
+      ca = Certmeister.new(config)
+      ca.remove('axl.starjuice.net')
+      expect(config.store.fetch('axl.starjuice.net')).to be_nil
+    end
+
+    it "does not capture errors from the store" do
+      config = CertmeisterConfigHelper::valid_config
+      config.store.send(:break!)
+      ca = Certmeister.new(config)
+      expect { ca.remove('axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
+    end
+
+  end
+
 end
 

@@ -44,6 +44,10 @@ module Certmeister
       @store.fetch(cn)
     end
 
+    def remove(cn)
+      !!@store.remove(cn)
+    end
+
     private
 
     def create_signed_certificate(csr)

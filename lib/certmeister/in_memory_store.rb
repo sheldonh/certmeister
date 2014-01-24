@@ -19,6 +19,11 @@ module Certmeister
       @certs[cn]
     end
 
+    def remove(cn)
+      fail_if_unhealthy
+      !!@certs.delete(cn)
+    end
+
     def health_check
       @healthy
     end
