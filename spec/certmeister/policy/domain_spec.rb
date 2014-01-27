@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-require 'certmeister/authenticator/domain'
+require 'certmeister/policy/domain'
 
-describe Certmeister::Authenticator::Domain do
+describe Certmeister::Policy::Domain do
 
-  subject { Certmeister::Authenticator::Domain.new(['hetzner.africa']) }
+  subject { Certmeister::Policy::Domain.new(['hetzner.africa']) }
 
   it "must be configured with a list of domains" do
     expected_error = "enumerable collection of domains required"
-    expect { Certmeister::Authenticator::Domain.new }.to raise_error(ArgumentError)
-    expect { Certmeister::Authenticator::Domain.new('example.com') }.to raise_error(ArgumentError, expected_error)
-    expect { Certmeister::Authenticator::Domain.new([]) }.to raise_error(ArgumentError, expected_error)
+    expect { Certmeister::Policy::Domain.new }.to raise_error(ArgumentError)
+    expect { Certmeister::Policy::Domain.new('example.com') }.to raise_error(ArgumentError, expected_error)
+    expect { Certmeister::Policy::Domain.new([]) }.to raise_error(ArgumentError, expected_error)
   end
 
   it "demands a request" do

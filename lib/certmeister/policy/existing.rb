@@ -1,8 +1,8 @@
-require 'certmeister/authenticator/response'
+require 'certmeister/policy/response'
 
 module Certmeister
 
-  module Authenticator
+  module Policy
 
     class Existing
 
@@ -13,9 +13,9 @@ module Certmeister
 
       def authenticate(request)
         if @store.fetch(request[:cn]).nil?
-          Certmeister::Authenticator::Response.new(true, nil)
+          Certmeister::Policy::Response.new(true, nil)
         else
-          Certmeister::Authenticator::Response.new(false, "certificate for cn already exists")
+          Certmeister::Policy::Response.new(false, "certificate for cn already exists")
         end
       end
 

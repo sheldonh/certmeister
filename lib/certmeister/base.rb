@@ -7,7 +7,7 @@ module Certmeister
 
     def initialize(config)
       if config.valid?
-        @authenticator = config.authenticator
+        @policy = config.policy
         @ca_cert = config.ca_cert
         @ca_key = config.ca_key
         @store = config.store
@@ -20,7 +20,7 @@ module Certmeister
     def sign(request)
       pem = nil
       error = nil
-      authentication = @authenticator.authenticate(request)
+      authentication = @policy.authenticate(request)
       if authentication.authenticated?
         begin
           csr = OpenSSL::X509::Request.new(request[:csr])

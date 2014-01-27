@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-require 'certmeister/authenticator/psk'
+require 'certmeister/policy/psk'
 
-describe Certmeister::Authenticator::Psk do
+describe Certmeister::Policy::Psk do
 
-  subject { Certmeister::Authenticator::Psk.new(['secret']) }
+  subject { Certmeister::Policy::Psk.new(['secret']) }
 
   it "must be configured with a list of psks" do
     expected_error = "enumerable collection of psks required"
-    expect { Certmeister::Authenticator::Psk.new }.to raise_error(ArgumentError)
-    expect { Certmeister::Authenticator::Psk.new('secret') }.to raise_error(ArgumentError, expected_error)
-    expect { Certmeister::Authenticator::Psk.new([]) }.to raise_error(ArgumentError, expected_error)
+    expect { Certmeister::Policy::Psk.new }.to raise_error(ArgumentError)
+    expect { Certmeister::Policy::Psk.new('secret') }.to raise_error(ArgumentError, expected_error)
+    expect { Certmeister::Policy::Psk.new([]) }.to raise_error(ArgumentError, expected_error)
   end
 
   it "demands a request" do

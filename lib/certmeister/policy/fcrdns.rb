@@ -1,25 +1,25 @@
 require 'resolv'
-require 'certmeister/authenticator/response'
+require 'certmeister/policy/response'
 
 module Certmeister
 
-  module Authenticator
+  module Policy
 
     class Fcrdns
 
       def authenticate(request)
         begin
           if not request[:cn]
-            Certmeister::Authenticator::Response.new(false, "missing cn")
+            Certmeister::Policy::Response.new(false, "missing cn")
           elsif not request[:ip]
-            Certmeister::Authenticator::Response.new(false, "missing ip")
+            Certmeister::Policy::Response.new(false, "missing ip")
           elsif not fcrdns_names(request[:ip]).include?(request[:cn])
-            Certmeister::Authenticator::Response.new(false, "cn in unknown domain")
+            Certmeister::Policy::Response.new(false, "cn in unknown domain")
           else
-            Certmeister::Authenticator::Response.new(true, nil)
+            Certmeister::Policy::Response.new(true, nil)
           end
         rescue Resolv::ResolvError => e
-          Certmeister::Authenticator::Response.new(false, "DNS error (#{e.message})")
+          Certmeister::Policy::Response.new(false, "DNS error (#{e.message})")
         end
       end
 

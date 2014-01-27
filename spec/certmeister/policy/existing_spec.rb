@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-require 'certmeister/authenticator/existing'
+require 'certmeister/policy/existing'
 require 'certmeister/in_memory_store'
 
-describe Certmeister::Authenticator::Existing do
+describe Certmeister::Policy::Existing do
 
-  subject { Certmeister::Authenticator::Existing.new(Certmeister::InMemoryStore.new) }
+  subject { Certmeister::Policy::Existing.new(Certmeister::InMemoryStore.new) }
 
   it "must be configured with access to the store" do
     expect { subject.class.new }.to raise_error(ArgumentError)
@@ -19,7 +19,7 @@ describe Certmeister::Authenticator::Existing do
 
   context "when the store contains a cert for axl.hetzner.africa" do
 
-    subject { Certmeister::Authenticator::Existing.new(Certmeister::InMemoryStore.new({"axl.hetzner.africa" => "...cert..."})) }
+    subject { Certmeister::Policy::Existing.new(Certmeister::InMemoryStore.new({"axl.hetzner.africa" => "...cert..."})) }
 
     it "refuses to authenticate a request for axl.hetzner.africa" do
       response = subject.authenticate(cn: 'axl.hetzner.africa')

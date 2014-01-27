@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'helpers/certmeister_config_helper'
-require 'helpers/certmeister_authenticator_helper'
+require 'helpers/certmeister_policy_helper'
 
 require 'certmeister'
 
@@ -103,26 +103,26 @@ describe Certmeister::Config do
 
   end
 
-  describe ":authenticator" do
+  describe ":policy" do
 
     it "is required" do
-      config_option_is_required(:authenticator)
+      config_option_is_required(:policy)
     end
 
     it "must provide a unary authenticate method" do
-      config_option_provides_method_with_arity(:authenticator, :authenticate, 1)
+      config_option_provides_method_with_arity(:policy, :authenticate, 1)
     end
 
-    it "must return a Certmeister::Authenticator::Response from the authenticate method" do
-      options[:authenticator] = CertmeisterAuthenticatorHelper::BrokenAuthenticator.new
+    it "must return a Certmeister::Policy::Response from the authenticate method" do
+      options[:policy] = CertmeisterPolicyHelper::BrokenPolicy.new
       config = Certmeister::Config.new(options)
       expect(config).to_not be_valid
-      expect(config.errors[:authenticator]).to eql "authenticator violates API"
+      expect(config.errors[:policy]).to eql "policy violates API"
     end
 
     it "is accessible" do
       config = Certmeister::Config.new(options)
-      expect(config.authenticator).to eql options[:authenticator]
+      expect(config.policy).to eql options[:policy]
     end
 
   end

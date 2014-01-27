@@ -1,8 +1,8 @@
-require 'certmeister/authenticator/response'
+require 'certmeister/policy/response'
 
 module Certmeister
 
-  module Authenticator
+  module Policy
 
     class Psk
 
@@ -13,11 +13,11 @@ module Certmeister
 
       def authenticate(request)
         if not request[:psk]
-          Certmeister::Authenticator::Response.new(false, "missing psk")
+          Certmeister::Policy::Response.new(false, "missing psk")
         elsif not @psks.include?(request[:psk])
-          Certmeister::Authenticator::Response.new(false, "unknown psk")
+          Certmeister::Policy::Response.new(false, "unknown psk")
         else
-          Certmeister::Authenticator::Response.new(true, nil)
+          Certmeister::Policy::Response.new(true, nil)
         end
       end
 

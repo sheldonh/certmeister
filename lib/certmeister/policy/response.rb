@@ -1,6 +1,6 @@
 module Certmeister
 
-  module Authenticator
+  module Policy
 
     class Response
 

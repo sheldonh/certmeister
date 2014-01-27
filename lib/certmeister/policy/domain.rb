@@ -1,8 +1,8 @@
-require 'certmeister/authenticator/response'
+require 'certmeister/policy/response'
 
 module Certmeister
 
-  module Authenticator
+  module Policy
 
     class Domain
 
@@ -13,11 +13,11 @@ module Certmeister
 
       def authenticate(request)
         if not request[:cn]
-          Certmeister::Authenticator::Response.new(false, "missing cn")
+          Certmeister::Policy::Response.new(false, "missing cn")
         elsif not @domains.any? { |domain| request[:cn].end_with?(domain) }
-          Certmeister::Authenticator::Response.new(false, "cn in unknown domain")
+          Certmeister::Policy::Response.new(false, "cn in unknown domain")
         else
-          Certmeister::Authenticator::Response.new(true, nil)
+          Certmeister::Policy::Response.new(true, nil)
         end
       end
 

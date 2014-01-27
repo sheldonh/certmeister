@@ -1,17 +1,17 @@
 require 'openssl'
 
-require 'certmeister/authenticator'
+require 'certmeister/policy'
 
 module Certmeister
 
   class Config
 
-    attr_reader :store, :authenticator
+    attr_reader :store, :policy
 
     def initialize(options)
       @options = options
       @store = options[:store]
-      @authenticator = options[:authenticator]
+      @policy = options[:policy]
       @errors = {}
     end
 
@@ -52,7 +52,7 @@ module Certmeister
       validate_x509_pem(:ca_cert)
       validate_pkey_pem(:ca_key)
       validate_store(:store)
-      validate_authenticator(:authenticator)
+      validate_policy(:policy)
       validate_openssl_digest
       validate_known_options
     end
@@ -94,14 +94,14 @@ module Certmeister
       end
     end
 
-    def validate_authenticator(option)
+    def validate_policy(option)
       o = @options[option]
       if not o
         @errors[option] = "is required"
-      elsif not Certmeister::Authenticator.validate_authenticate_signature(@options[option])
+      elsif not Certmeister::Policy.validate_authenticate_signature(@options[option])
         @errors[option] = "must provide a unary authenticate method"
-      elsif not Certmeister::Authenticator.validate_authenticate_returns_response(@options[option])
-        @errors[option] = "authenticator violates API"
+      elsif not Certmeister::Policy.validate_authenticate_returns_response(@options[option])
+        @errors[option] = "policy violates API"
       end
     end
 
@@ -112,7 +112,7 @@ module Certmeister
     end
 
     def validate_known_options
-      unexpected = @options.keys - [:ca_cert, :ca_key, :store, :authenticator]
+      unexpected = @options.keys - [:ca_cert, :ca_key, :store, :policy]
       unexpected.each do |option|
         @errors[option] = "is not a supported option"
       end

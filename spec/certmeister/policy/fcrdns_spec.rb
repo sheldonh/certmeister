@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-require 'certmeister/authenticator/fcrdns'
+require 'certmeister/policy/fcrdns'
 
-describe Certmeister::Authenticator::Fcrdns do
+describe Certmeister::Policy::Fcrdns do
 
   it "demands a request" do
     expect { subject.authenticate }.to raise_error(ArgumentError)
