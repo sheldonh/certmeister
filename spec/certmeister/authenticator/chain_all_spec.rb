@@ -18,13 +18,6 @@ describe Certmeister::Authenticator::ChainAll do
     expect { authenticator.authenticate }.to raise_error(ArgumentError)
   end
 
-  it "refuses to authenticate an empty request" do
-    authenticator = Certmeister::Authenticator::ChainAll.new([Certmeister::Authenticator::Noop.new])
-    response = authenticator.authenticate({})
-    expect(response).to_not be_authenticated
-    expect(response.error).to eql "empty request"
-  end
-
   it "authenticates a request that all its chained authenticators authenticate" do
     authenticator = Certmeister::Authenticator::ChainAll.new([Certmeister::Authenticator::Noop.new, Certmeister::Authenticator::Noop.new])
     response = authenticator.authenticate({anything: 'something'})

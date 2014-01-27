@@ -6,11 +6,7 @@ module Certmeister
 
     class Noop
       def authenticate(request)
-        if request.empty?
-          Certmeister::Authenticator::Response.new(false, "empty request")
-        else
-          Certmeister::Authenticator::Response.new(true, nil)
-        end
+        Certmeister::Authenticator::Response.new(true, nil)
       end
     end
 

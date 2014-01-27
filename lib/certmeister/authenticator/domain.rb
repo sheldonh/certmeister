@@ -12,9 +12,7 @@ module Certmeister
       end
 
       def authenticate(request)
-        if request.empty?
-          Certmeister::Authenticator::Response.new(false, "empty request")
-        elsif not request[:cn]
+        if not request[:cn]
           Certmeister::Authenticator::Response.new(false, "missing cn")
         elsif not @domains.any? { |domain| request[:cn].end_with?(domain) }
           Certmeister::Authenticator::Response.new(false, "cn in unknown domain")

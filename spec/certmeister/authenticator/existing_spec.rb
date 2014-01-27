@@ -17,12 +17,6 @@ describe Certmeister::Authenticator::Existing do
     expect { subject.authenticate }.to raise_error(ArgumentError)
   end
 
-  it "refuses to authenticate an empty request" do
-    response = subject.authenticate({})
-    expect(response).to_not be_authenticated
-    expect(response.error).to eql "empty request"
-  end
-
   context "when the store contains a cert for axl.hetzner.africa" do
 
     subject { Certmeister::Authenticator::Existing.new(Certmeister::InMemoryStore.new({"axl.hetzner.africa" => "...cert..."})) }

@@ -113,7 +113,7 @@ describe Certmeister::Config do
       config_option_provides_method_with_arity(:authenticator, :authenticate, 1)
     end
 
-    it "must refuse an empty request" do
+    it "must return a Certmeister::Authenticator::Response from the authenticate method" do
       options[:authenticator] = CertmeisterAuthenticatorHelper::BrokenAuthenticator.new
       config = Certmeister::Config.new(options)
       expect(config).to_not be_valid

@@ -6,9 +6,9 @@ module Certmeister
       authenticator and authenticator.respond_to?(:authenticate) and authenticator.method(:authenticate).arity == 1
     end
 
-    def self.validate_authenticate_refuses_empty(authenticator)
+    def self.validate_authenticate_returns_response(authenticator)
       response = authenticator.authenticate({})
-      response.respond_to?(:authenticated?) and !response.authenticated? and response.error == "empty request"
+      response.respond_to?(:authenticated?) and response.respond_to?(:error)
     end
 
   end

@@ -12,18 +12,11 @@ module Certmeister
       end
 
       def authenticate(request)
-        if request.empty?
-          Certmeister::Authenticator::Response.new(false, "empty request")
-        else
-          success = Certmeister::Authenticator::Response.new(true, nil)
-          @authenticators.inject(success) do |continue, authenticator|
-            response = authenticator.authenticate(request)
-            if response.authenticated?
-              continue
-            else
-              break response
-            end
-          end
+        success = Certmeister::Authenticator::Response.new(true, nil)
+        @authenticators.inject(success) do |continue, authenticator|
+          response = authenticator.authenticate(request)
+          break response unless response.authenticated?
+          continue
         end
       end
 
@@ -31,8 +24,7 @@ module Certmeister
 
       def validate_authenticators(authenticators)
         unless authenticators.is_a?(Enumerable) and authenticators.respond_to?(:size) and authenticators.size > 0 and
-               authenticators.all? { |authenticator| Certmeister::Authenticator.validate_authenticate_signature(authenticator) } and
-               authenticators.all? { |authenticator| Certmeister::Authenticator.validate_authenticate_refuses_empty(authenticator) }
+               authenticators.all? { |authenticator| Certmeister::Authenticator.validate_authenticate_signature(authenticator) }
           raise ArgumentError.new("enumerable collection of authenticators required")
         end
       end

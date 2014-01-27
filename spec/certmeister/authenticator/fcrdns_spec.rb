@@ -8,12 +8,6 @@ describe Certmeister::Authenticator::Fcrdns do
     expect { subject.authenticate }.to raise_error(ArgumentError)
   end
 
-  it "refuses to authenticate an empty request" do
-    response = subject.authenticate({})
-    expect(response).to_not be_authenticated
-    expect(response.error).to eql "empty request"
-  end
-
   it "refuses to authenticate a request with a missing cn" do
     response = subject.authenticate({ip: '127.0.0.1'})
     expect(response).to_not be_authenticated

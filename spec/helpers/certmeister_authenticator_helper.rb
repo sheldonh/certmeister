@@ -5,7 +5,7 @@ module CertmeisterAuthenticatorHelper
   class BrokenAuthenticator
 
     def authenticate(request)
-      Certmeister::Authenticator::Response.new(true, nil)
+      :white_elephant
     end
 
   end

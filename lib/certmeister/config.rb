@@ -100,7 +100,7 @@ module Certmeister
         @errors[option] = "is required"
       elsif not Certmeister::Authenticator.validate_authenticate_signature(@options[option])
         @errors[option] = "must provide a unary authenticate method"
-      elsif not Certmeister::Authenticator.validate_authenticate_refuses_empty(@options[option])
+      elsif not Certmeister::Authenticator.validate_authenticate_returns_response(@options[option])
         @errors[option] = "authenticator violates API"
       end
     end

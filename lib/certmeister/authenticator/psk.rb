@@ -12,9 +12,7 @@ module Certmeister
       end
 
       def authenticate(request)
-        if request.empty?
-          Certmeister::Authenticator::Response.new(false, "empty request")
-        elsif not request[:psk]
+        if not request[:psk]
           Certmeister::Authenticator::Response.new(false, "missing psk")
         elsif not @psks.include?(request[:psk])
           Certmeister::Authenticator::Response.new(false, "unknown psk")

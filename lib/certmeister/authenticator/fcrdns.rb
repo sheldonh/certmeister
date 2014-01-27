@@ -9,9 +9,7 @@ module Certmeister
 
       def authenticate(request)
         begin
-          if request.empty?
-            Certmeister::Authenticator::Response.new(false, "empty request")
-          elsif not request[:cn]
+          if not request[:cn]
             Certmeister::Authenticator::Response.new(false, "missing cn")
           elsif not request[:ip]
             Certmeister::Authenticator::Response.new(false, "missing ip")
