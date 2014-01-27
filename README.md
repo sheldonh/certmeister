@@ -7,12 +7,13 @@ The service will autosign a certificate request when the configurable access pol
 The reference access policy in use by Hetzner PTY Ltd is:
 
 * the Common Name (CN) of the certificate is in the host-h.net domain,
-* the requesting client IP address has forward confirmed reverse DNS that matches the CN, and
-* the client presents an allowed PSK.
+* the service has no record of already having signed a certificate for that CN, and
+* the requesting client IP address has forward confirmed reverse DNS that matches the CN.
+* Requests to fetch certificates are always allowed.
+* Requests to delete certificates are only allowed when they originate from
+  a secure operator network.
 
 This allows us the convenience of Puppet's autosign feature, without the horrendous security implications.
-We could do away with the requirement for a PSK, but then our managed hosting servers would have to put
-a firewall rule in place that prevents customers from reaching Certmeister.
 
 Certmeister is the core of a fancy web service that does this:
 
