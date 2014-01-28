@@ -21,9 +21,9 @@ describe Certmeister do
 
     describe "refuses" do
 
-      it "refuses the request if the policy declines it" do
+      it "refuses the request if the sign policy declines it" do
         options = CertmeisterConfigHelper::valid_config_options
-        options[:policy] = Certmeister::Policy::Blackhole.new
+        options[:sign_policy] = Certmeister::Policy::Blackhole.new
         ca = Certmeister.new(Certmeister::Config.new(options))
         response = ca.sign(valid_request)
         expect(response).to_not be_signed
@@ -55,7 +55,7 @@ describe Certmeister do
         ca.sign(valid_request)
       end
 
-      it "signs a CSR if the policy passes the request" do
+      it "signs a CSR if the sign policy passes the request" do
         response = sign_valid_request
         expect(response).to be_signed
       end

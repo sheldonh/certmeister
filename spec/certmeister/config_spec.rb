@@ -103,28 +103,30 @@ describe Certmeister::Config do
 
   end
 
-  describe ":policy" do
+  [:sign_policy, :fetch_policy, :remove_policy].each do |policy|
+    describe ":#{policy}" do
 
-    it "is required" do
-      config_option_is_required(:policy)
+      it "is required" do
+        config_option_is_required(policy)
+      end
+
+      it "must provide a unary authenticate method" do
+        config_option_provides_method_with_arity(policy, :authenticate, 1)
+      end
+
+      it "must return a Certmeister::Policy::Response from the authenticate method" do
+        options[policy] = CertmeisterPolicyHelper::BrokenPolicy.new
+        config = Certmeister::Config.new(options)
+        expect(config).to_not be_valid
+        expect(config.errors[policy]).to eql "must return a policy response"
+      end
+
+      it "is accessible" do
+        config = Certmeister::Config.new(options)
+        expect(config.send(policy)).to eql options[policy]
+      end
+
     end
-
-    it "must provide a unary authenticate method" do
-      config_option_provides_method_with_arity(:policy, :authenticate, 1)
-    end
-
-    it "must return a Certmeister::Policy::Response from the authenticate method" do
-      options[:policy] = CertmeisterPolicyHelper::BrokenPolicy.new
-      config = Certmeister::Config.new(options)
-      expect(config).to_not be_valid
-      expect(config.errors[:policy]).to eql "policy violates API"
-    end
-
-    it "is accessible" do
-      config = Certmeister::Config.new(options)
-      expect(config.policy).to eql options[:policy]
-    end
-
   end
 
   describe "error_list" do

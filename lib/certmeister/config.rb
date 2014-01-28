@@ -6,12 +6,14 @@ module Certmeister
 
   class Config
 
-    attr_reader :store, :policy
+    attr_reader :store, :sign_policy, :fetch_policy, :remove_policy
 
     def initialize(options)
       @options = options
       @store = options[:store]
-      @policy = options[:policy]
+      @sign_policy = options[:sign_policy]
+      @fetch_policy = options[:fetch_policy]
+      @remove_policy = options[:remove_policy]
       @errors = {}
     end
 
@@ -52,7 +54,9 @@ module Certmeister
       validate_x509_pem(:ca_cert)
       validate_pkey_pem(:ca_key)
       validate_store(:store)
-      validate_policy(:policy)
+      validate_policy(:sign_policy)
+      validate_policy(:fetch_policy)
+      validate_policy(:remove_policy)
       validate_openssl_digest
       validate_known_options
     end
@@ -101,7 +105,7 @@ module Certmeister
       elsif not Certmeister::Policy.validate_authenticate_signature(@options[option])
         @errors[option] = "must provide a unary authenticate method"
       elsif not Certmeister::Policy.validate_authenticate_returns_response(@options[option])
-        @errors[option] = "policy violates API"
+        @errors[option] = "must return a policy response"
       end
     end
 
@@ -112,7 +116,7 @@ module Certmeister
     end
 
     def validate_known_options
-      unexpected = @options.keys - [:ca_cert, :ca_key, :store, :policy]
+      unexpected = @options.keys - [:ca_cert, :ca_key, :store, :sign_policy, :fetch_policy, :remove_policy]
       unexpected.each do |option|
         @errors[option] = "is not a supported option"
       end
