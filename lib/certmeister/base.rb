@@ -18,30 +18,20 @@ module Certmeister
     end
 
     def sign(request)
-      pem = nil
-      error = nil
-      authentication = @sign_policy.authenticate(request)
-      if authentication.authenticated?
-        begin
-          csr = OpenSSL::X509::Request.new(request[:csr])
-        rescue OpenSSL::OpenSSLError => e
-          error = "invalid CSR (#{e.message})"
-        else
-          if get_cn(csr) == request[:cn]
-            pem = create_signed_certificate(csr).to_pem
-            @store.store(request[:cn], pem)
-          else
-            error = "CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})"
-          end
-        end
+      if !request[:cn]
+        Certmeister::SigningResponse.new(nil, "request missing CN")
       else
-        error = "request refused (#{authentication.error})"
+        authentication = @sign_policy.authenticate(request)
+        if authentication.authenticated?
+          really_sign(request)
+        else
+          Certmeister::SigningResponse.new(nil, "request refused (#{authentication.error})")
+        end
       end
-      Certmeister::SigningResponse.new(pem, error)
     end
 
-    def fetch(cn)
-      @store.fetch(cn)
+    def fetch(request)
+      @store.fetch(request[:cn])
     end
 
     def remove(cn)
@@ -49,6 +39,22 @@ module Certmeister
     end
 
     private
+
+    def really_sign(request)
+      begin
+        csr = OpenSSL::X509::Request.new(request[:csr])
+      rescue OpenSSL::OpenSSLError => e
+        Certmeister::SigningResponse.new(nil, "invalid CSR (#{e.message})")
+      else
+        if get_cn(csr) == request[:cn]
+          pem = create_signed_certificate(csr).to_pem
+          @store.store(request[:cn], pem)
+          Certmeister::SigningResponse.new(pem, nil)
+        else
+          Certmeister::SigningResponse.new(nil, "CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})")
+        end
+      end
+    end
 
     def create_signed_certificate(csr)
       cert = OpenSSL::X509::Certificate.new

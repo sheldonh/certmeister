@@ -21,6 +21,14 @@ describe Certmeister do
 
     describe "refuses" do
 
+      it "refuses the request if it has no cn" do
+        ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+        invalid_request = valid_request.tap { |o| o.delete(:cn) }
+        response = ca.sign(invalid_request)
+        expect(response).to_not be_signed
+        expect(response.error).to match /CN/
+      end
+
       it "refuses the request if the sign policy declines it" do
         options = CertmeisterConfigHelper::valid_config_options
         options[:sign_policy] = Certmeister::Policy::Blackhole.new
@@ -100,18 +108,23 @@ describe Certmeister do
 
   end
 
-  describe "#fetch(cn)" do
+  describe "#fetch(request)" do
+
+    it "returns nil if the request has no cn" do
+      ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+      expect(ca.fetch(cn: nil)).to be_nil
+    end
 
     it "returns nil if the store has no certificate for the cn" do
       ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-      expect(ca.fetch('axl.starjuice.net')).to be_nil
+      expect(ca.fetch(cn: 'axl.starjuice.net')).to be_nil
     end
 
     it "returns the certificate as a PEM-encoded string when the store has a certificate for the cn" do
       config = CertmeisterConfigHelper::valid_config
       config.store.store('axl.starjuice.net', '...')
       ca = Certmeister.new(config)
-      expect(ca.fetch('axl.starjuice.net')).to eql '...'
+      expect(ca.fetch(cn: 'axl.starjuice.net')).to eql '...'
     end
 
     class StoreWithBrokenFetch
@@ -124,7 +137,7 @@ describe Certmeister do
       config = CertmeisterConfigHelper::valid_config
       config.store.send(:break!)
       ca = Certmeister.new(config)
-      expect { ca.fetch('axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
+      expect { ca.fetch(cn: 'axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
     end
 
   end
