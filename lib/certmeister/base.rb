@@ -31,7 +31,11 @@ module Certmeister
     end
 
     def fetch(request)
-      @store.fetch(request[:cn])
+      if !request[:cn]
+        Certmeister::FetchingResponse.new(nil, "request missing CN")
+      else
+        @store.fetch(request[:cn])
+      end
     end
 
     def remove(cn)

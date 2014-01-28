@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'helpers/certmeister_config_helper'
 require 'helpers/certmeister_signing_request_helper'
+require 'helpers/certmeister_fetching_request_helper'
 
 require 'certmeister'
 require 'openssl'
@@ -110,11 +111,20 @@ describe Certmeister do
 
   describe "#fetch(request)" do
 
-    it "returns nil if the request has no cn" do
-      ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-      expect(ca.fetch(cn: nil)).to be_nil
-    end
+    let(:valid_request) { CertmeisterFetchingRequestHelper::valid_request }
 
+    describe "refuses" do
+
+      it "refuses the request if it has no cn" do
+        ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+        invalid_request = valid_request.tap { |o| o.delete(:cn) }
+        response = ca.fetch(invalid_request)
+        expect(response).to_not be_fetched
+        expect(response.error).to match /CN/
+      end
+
+    end
+    
     it "returns nil if the store has no certificate for the cn" do
       ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
       expect(ca.fetch(cn: 'axl.starjuice.net')).to be_nil
