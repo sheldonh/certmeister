@@ -92,6 +92,10 @@ describe Certmeister::Config do
       config_option_provides_method_with_arity(:store, :fetch, 1)
     end
 
+    it "must provide a unary remove method" do
+      config_option_provides_method_with_arity(:store, :remove, 1)
+    end
+
     it "must provide a nullary health_check method" do
       config_option_provides_method_with_arity(:store, :health_check, 0)
     end
