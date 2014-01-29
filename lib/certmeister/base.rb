@@ -8,6 +8,8 @@ module Certmeister
     def initialize(config)
       if config.valid?
         @sign_policy = config.sign_policy
+        @fetch_policy = config.fetch_policy
+        @remove_policy = config.remove_policy
         @ca_cert = config.ca_cert
         @ca_key = config.ca_key
         @store = config.store
@@ -18,44 +20,46 @@ module Certmeister
     end
 
     def sign(request)
-      if !request[:cn]
-        Certmeister::SigningResponse.new(nil, "request missing CN")
-      else
-        authentication = @sign_policy.authenticate(request)
-        if authentication.authenticated?
-          really_sign(request)
+      subject_to_policy(@sign_policy, request) do |request|
+        begin
+          csr = OpenSSL::X509::Request.new(request[:csr])
+        rescue OpenSSL::OpenSSLError => e
+          Certmeister::Response.error("invalid CSR (#{e.message})")
         else
-          Certmeister::SigningResponse.new(nil, "request refused (#{authentication.error})")
+          if get_cn(csr) == request[:cn]
+            pem = create_signed_certificate(csr).to_pem
+            @store.store(request[:cn], pem)
+            Certmeister::Response.hit(pem)
+          else
+            Certmeister::Response.error("CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})")
+          end
         end
       end
     end
 
     def fetch(request)
-      if !request[:cn]
-        Certmeister::FetchingResponse.new(nil, "request missing CN")
-      else
-        @store.fetch(request[:cn])
+      subject_to_policy(@fetch_policy, request) do |request|
+        Certmeister::Response.new(@store.fetch(request[:cn]), nil)
       end
     end
 
-    def remove(cn)
-      !!@store.remove(cn)
+    def remove(request)
+      subject_to_policy(@remove_policy, request) do |request|
+        Certmeister::Response.new(!!@store.remove(request[:cn]), nil)
+      end
     end
 
     private
 
-    def really_sign(request)
-      begin
-        csr = OpenSSL::X509::Request.new(request[:csr])
-      rescue OpenSSL::OpenSSLError => e
-        Certmeister::SigningResponse.new(nil, "invalid CSR (#{e.message})")
+    def subject_to_policy(policy, request, &block)
+      if !request[:cn]
+        Certmeister::Response.error("request missing CN")
       else
-        if get_cn(csr) == request[:cn]
-          pem = create_signed_certificate(csr).to_pem
-          @store.store(request[:cn], pem)
-          Certmeister::SigningResponse.new(pem, nil)
+        authentication = policy.authenticate(request)
+        if authentication.authenticated?
+          block.call(request)
         else
-          Certmeister::SigningResponse.new(nil, "CSR subject (#{get_cn(csr)}) disagrees with request CN (#{request[:cn]})")
+          Certmeister::Response.error("request refused (#{authentication.error})")
         end
       end
     end

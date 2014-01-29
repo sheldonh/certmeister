@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'helpers/certmeister_config_helper'
 require 'helpers/certmeister_signing_request_helper'
-require 'helpers/certmeister_fetching_request_helper'
 
 require 'certmeister'
 require 'openssl'
@@ -24,9 +23,9 @@ describe Certmeister do
 
       it "refuses the request if it has no cn" do
         ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+        response = ca.sign({})
         invalid_request = valid_request.tap { |o| o.delete(:cn) }
         response = ca.sign(invalid_request)
-        expect(response).to_not be_signed
         expect(response.error).to match /CN/
       end
 
@@ -35,15 +34,13 @@ describe Certmeister do
         options[:sign_policy] = Certmeister::Policy::Blackhole.new
         ca = Certmeister.new(Certmeister::Config.new(options))
         response = ca.sign(valid_request)
-        expect(response).to_not be_signed
         expect(response.error).to eql "request refused (blackholed)"
       end
 
       it "refuses to sign an invalid CSR" do
         ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-        invalid_request = valid_request.tap { |r| r[:csr] = "a terrible misunderstanding" }
+        invalid_request = valid_request.tap { |o| o[:csr] = "a terrible misunderstanding" }
         response = ca.sign(invalid_request)
-        expect(response).to_not be_signed
         expect(response.error).to eql "invalid CSR (not enough data)"
       end
 
@@ -51,7 +48,6 @@ describe Certmeister do
         request = valid_request.tap { |r| r[:cn] = "monkeyface.example.com" }
         ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
         response = ca.sign(request)
-        expect(response).to_not be_signed
         expect(response.error).to eql "CSR subject (axl.hetzner.africa) disagrees with request CN (monkeyface.example.com)"
       end
 
@@ -66,7 +62,7 @@ describe Certmeister do
 
       it "signs a CSR if the sign policy passes the request" do
         response = sign_valid_request
-        expect(response).to be_signed
+        expect(response).to be_hit
       end
 
       it "sets the issuer to the subject of the CA certificate" do
@@ -111,30 +107,34 @@ describe Certmeister do
 
   describe "#fetch(request)" do
 
-    let(:valid_request) { CertmeisterFetchingRequestHelper::valid_request }
-
     describe "refuses" do
 
       it "refuses the request if it has no cn" do
         ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-        invalid_request = valid_request.tap { |o| o.delete(:cn) }
-        response = ca.fetch(invalid_request)
-        expect(response).to_not be_fetched
+        response = ca.fetch({})
         expect(response.error).to match /CN/
+      end
+
+      it "refuses the request if the fetch policy declines it" do
+        options = CertmeisterConfigHelper::valid_config_options
+        options[:fetch_policy] = Certmeister::Policy::Blackhole.new
+        ca = Certmeister.new(Certmeister::Config.new(options))
+        response = ca.fetch(cn: 'axl.starjuice.net')
+        expect(response.error).to eql "request refused (blackholed)"
       end
 
     end
     
-    it "returns nil if the store has no certificate for the cn" do
+    it "returns a miss if the store has no certificate for the cn" do
       ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-      expect(ca.fetch(cn: 'axl.starjuice.net')).to be_nil
+      expect(ca.fetch(cn: 'axl.starjuice.net')).to be_miss
     end
 
     it "returns the certificate as a PEM-encoded string when the store has a certificate for the cn" do
       config = CertmeisterConfigHelper::valid_config
       config.store.store('axl.starjuice.net', '...')
       ca = Certmeister.new(config)
-      expect(ca.fetch(cn: 'axl.starjuice.net')).to eql '...'
+      expect(ca.fetch(cn: 'axl.starjuice.net').pem).to eql '...'
     end
 
     class StoreWithBrokenFetch
@@ -154,23 +154,41 @@ describe Certmeister do
 
   describe "#remove(cn)" do
 
-    it "returns true is the certificate existed in the store" do
+    describe "refuses" do
+
+      it "refuses the request if it has no cn" do
+        ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+        response = ca.remove({})
+        expect(response.error).to match /CN/
+      end
+
+      it "refuses the request if the fetch policy declines it" do
+        options = CertmeisterConfigHelper::valid_config_options
+        options[:remove_policy] = Certmeister::Policy::Blackhole.new
+        ca = Certmeister.new(Certmeister::Config.new(options))
+        response = ca.remove(cn: 'axl.starjuice.net')
+        expect(response.error).to eql "request refused (blackholed)"
+      end
+
+    end
+    
+    it "returns a hit if the certificate existed in the store" do
       config = CertmeisterConfigHelper::valid_config
       config.store.store('axl.starjuice.net', '...')
       ca = Certmeister.new(config)
-      expect(ca.remove('axl.starjuice.net')).to eql true
+      expect(ca.remove(cn: 'axl.starjuice.net')).to be_hit
     end
 
-    it "returns false if the certificate did not exist in the store" do
+    it "returns a miss if the certificate did not exist in the store" do
       ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
-      expect(ca.remove('axl.starjuice.net')).to be_false
+      expect(ca.remove(cn: 'axl.starjuice.net')).to be_miss
     end
 
     it "removes the certificate from the store" do
       config = CertmeisterConfigHelper::valid_config
       config.store.store('axl.starjuice.net', '...')
       ca = Certmeister.new(config)
-      ca.remove('axl.starjuice.net')
+      ca.remove(cn: 'axl.starjuice.net')
       expect(config.store.fetch('axl.starjuice.net')).to be_nil
     end
 
@@ -178,7 +196,7 @@ describe Certmeister do
       config = CertmeisterConfigHelper::valid_config
       config.store.send(:break!)
       ca = Certmeister.new(config)
-      expect { ca.remove('axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
+      expect { ca.remove(cn: 'axl.starjuice.net') }.to raise_error(Certmeister::StoreError)
     end
 
   end
