@@ -1,0 +1,54 @@
+module Certmeister
+
+  module Test
+    
+    module MemoryStoreInterface
+
+      def it_behaves_like_a_certmeister_store
+        
+        it "stores certificates by CN (common name)" do
+          pem = File.read('fixtures/client.crt')
+          subject.store('axl.hetzner.africa', pem)
+          expect(subject.fetch('axl.hetzner.africa')).to eql pem
+        end
+
+        it "returns nil when fetching non-existent CN" do
+          expect(subject.fetch('axl.hetzner.africa')).to be_nil
+        end
+
+        it "is not concerned with validating certificates" do
+          expect { subject.store('axl.hetzner.africa', "nonsense") }.to_not raise_error
+        end
+
+        it "overwrites an existing certificate if one exists" do
+          subject.store('axl.hetzner.africa', "first")
+          subject.store('axl.hetzner.africa', "second")
+          expect(subject.fetch('axl.hetzner.africa')).to eql "second"
+        end
+
+        it "deletes certificates by CN (common name)" do
+          subject.store('axl.hetzner.africa', "cert")
+          expect(subject.remove('axl.hetzner.africa')).to be_true
+          expect(subject.fetch('axl.hetzner.africa')).to be_nil
+        end
+
+        it "returns false when removing a non-existent CN" do
+          expect(subject.remove('axl.hetzner.africa')).to be_false
+        end
+
+        it "returns true from health_check when healthy" do
+          expect(subject.health_check).to be_true
+        end
+
+        it "returns false from health_check when not healthy" do
+          subject.send(:break!)
+          expect(subject.health_check).to be_false
+        end
+
+      end
+
+    end
+
+  end
+
+end
