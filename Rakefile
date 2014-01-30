@@ -12,7 +12,7 @@ end
 
 desc 'Tags version, pushes to remote, and pushes gem'
 task :release => :build do
-  sh 'git', 'tag', '-m', changelog, "v#{Certmeister::VERSION}"
+  sh 'git', 'tag', '-m', "Released v#{Certmeister::VERSION}", "v#{Certmeister::VERSION}"
   sh "git push origin master"
   sh "git push origin v#{Certmeister::VERSION}"
   sh "ls pkg/*.gem | xargs -n 1 gem push"
