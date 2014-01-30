@@ -18,5 +18,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "certmeister", Certmeister::VERSION
-  spec.add_dependency "redis-sentinel", "~> 1.4.2"
+  spec.add_dependency "redis-sentinel", "~> 1.4"
 end
