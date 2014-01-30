@@ -26,8 +26,8 @@ To hit the service:
 ```
 $ curl -L \
     -d "psk=secretkey" \
-    -d "csr=$(perl -MURI::Escape -e 'print uri_escape(join("", <STDIN>));' < request/client.csr)" \
-    http://certmeister.hetzner.co.za/certificate/$(hostname --fqdn) > request/client.crt
+    -d "csr=$(perl -MURI::Escape -e 'print uri_escape(join("", <STDIN>));' < fixtures/client.csr)" \
+    http://certmeister.hetzner.co.za/certificate/axl.starjuice.net
 ```
 
 ## Testing
