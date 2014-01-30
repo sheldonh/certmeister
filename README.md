@@ -30,3 +30,19 @@ $ curl -L \
     http://certmeister.hetzner.co.za/certificate/$(hostname --fqdn) > request/client.crt
 ```
 
+## Testing
+
+Because we test both certmeister and certmeister-redis with `rake spec`, you need redis up if you want to run the tests. It's easy:
+
+* Install redis-2.8.4 or later.
+* Start redis.
+* Run tests.
+* Stop redis.
+
+```
+sudo yum install -y ansible
+sudo ansible-playbook -i contrib/hosts contrib/redis.yml
+redis-server --logfile /dev/null &
+rake spec
+kill %1; wait %1
+```
