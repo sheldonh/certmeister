@@ -15,7 +15,8 @@ module Certmeister
         @store = config.store
         @openssl_digest = config.openssl_digest
       else
-        raise RuntimeError.new("invalid config")
+        reasons = config.errors.map { |kv| kv.join(' ') }
+        raise RuntimeError.new("invalid config: #{reasons.join('; ')}")
       end
     end
 
