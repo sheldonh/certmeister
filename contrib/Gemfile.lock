@@ -1,0 +1,24 @@
+PATH
+  remote: ..
+  specs:
+    certmeister (0.0.2)
+    certmeister-redis (0.0.2)
+      certmeister (= 0.0.2)
+      redis-sentinel (~> 1.4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rack (1.5.2)
+    redis (3.0.7)
+    redis-sentinel (1.4.2)
+      redis
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  certmeister!
+  certmeister-redis!
+  rack
+  redis
