@@ -44,7 +44,7 @@ describe Certmeister do
         expect(response.error).to eql "invalid CSR (not enough data)"
       end
 
-      it "refuses to sign a CSR if the subject does not agree with the request CN" do
+      it "(XXX move this into the policy) refuses to sign a CSR if the subject does not agree with the request CN" do
         request = valid_request.tap { |r| r[:cn] = "monkeyface.example.com" }
         ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
         response = ca.sign(request)
