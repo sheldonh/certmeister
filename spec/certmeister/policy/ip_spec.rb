@@ -12,7 +12,7 @@ describe Certmeister::Policy::IP do
   end
 
   it "explodes if initialized with things other than CIDR strings" do
-    expect { Certmeister::Policy::IP.new(['localhost']) }.to_not raise_error(IPAddr::Error)
+    expect { Certmeister::Policy::IP.new(['localhost']) }.to raise_error(IPAddr::Error)
   end
 
   it "refuses to authenticate a request with a missing ip" do
