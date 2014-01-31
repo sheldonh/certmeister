@@ -1,5 +1,5 @@
 module Certmeister
 
-  VERSION = '0.0.2' unless defined?(VERSION)
+  VERSION = '0.1.0' unless defined?(VERSION)
   
 end
