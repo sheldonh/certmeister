@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 require 'certmeister/policy/ip'
+require 'ipaddr'
 
 describe Certmeister::Policy::IP do
 
@@ -8,6 +9,10 @@ describe Certmeister::Policy::IP do
 
   it "demands a request" do
     expect { subject.authenticate }.to raise_error(ArgumentError)
+  end
+
+  it "explodes if initialized with things other than CIDR strings" do
+    expect { Certmeister::Policy::IP.new(['localhost']) }.to_not raise_error(IPAddr::Error)
   end
 
   it "refuses to authenticate a request with a missing ip" do
