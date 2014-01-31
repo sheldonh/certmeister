@@ -1,5 +1,7 @@
+require 'semver'
+
 module Certmeister
 
-  VERSION = '0.2.1' unless defined?(VERSION)
+  VERSION = SemVer.find.format("%M.%m.%p%s") unless defined?(VERSION)
   
 end
