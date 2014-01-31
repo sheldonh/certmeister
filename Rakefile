@@ -1,4 +1,5 @@
 require "rspec/core/rake_task"
+require "certmeister/version"
 
 desc 'Build gem into the pkg directory'
 task :build => :spec do
