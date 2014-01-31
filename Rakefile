@@ -1,7 +1,7 @@
 require "rspec/core/rake_task"
 
 desc 'Build gem into the pkg directory'
-task :build do
+task :build => :spec do
   FileUtils.rm_rf('pkg')
   Dir['*.gemspec'].each do |gemspec|
     system "gem build #{gemspec}"
@@ -18,15 +18,15 @@ namespace :bump do
   end
 
   desc 'Bump version [major]'
-  task :major do
+  task :major => :build do
     bump_version.call('major')
   end
   desc 'Bump version [minor]'
-  task :minor do
+  task :minor => :build do
     bump_version.call('minor')
   end
   desc 'Bump version [patch]'
-  task :patch do
+  task :patch => :build do
     bump_version.call('patch')
   end
 end
