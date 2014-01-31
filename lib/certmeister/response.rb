@@ -2,12 +2,12 @@ module Certmeister
 
   class Response
 
-    def initialize(pem, error)
+    private_class_method :new
+
+    def initialize(type, pem, error)
+      @type = type
       @pem = pem
       @error = error
-      if @pem and @error
-        raise ArgumentError.new("pem and error are mutually exclusive")
-      end
     end
 
     def pem
@@ -19,27 +19,35 @@ module Certmeister
     end
 
     def hit?
-      !!@pem
+      @type == :hit
     end
 
     def miss?
-      !(hit? or error?)
+      @type == :miss
+    end
+
+    def denied?
+      @type == :denied
     end
 
     def error?
-      !!@error
+      @type == :error
     end
 
-    def self.hit(pem)
-      self.new(pem, nil)
+    def self.hit(pem = :none)
+      new(:hit, pem, nil)
     end
 
     def self.miss
-      self.new(nil, nil)
+      new(:miss, nil, nil)
+    end
+
+    def self.denied(message)
+      new(:denied, nil, message)
     end
 
     def self.error(message)
-      self.new(nil, message)
+      new(:error, nil, message)
     end
 
   end

@@ -40,13 +40,21 @@ module Certmeister
 
     def fetch(request)
       subject_to_policy(@fetch_policy, request) do |request|
-        Certmeister::Response.new(@store.fetch(request[:cn]), nil)
+        if pem = @store.fetch(request[:cn])
+          Certmeister::Response.hit(pem)
+        else
+          Certmeister::Response.miss
+        end
       end
     end
 
     def remove(request)
       subject_to_policy(@remove_policy, request) do |request|
-        Certmeister::Response.new(!!@store.remove(request[:cn]), nil)
+        if @store.remove(request[:cn])
+          Certmeister::Response.hit
+        else
+          Certmeister::Response.miss
+        end
       end
     end
 

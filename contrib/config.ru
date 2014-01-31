@@ -21,7 +21,9 @@ ca = Certmeister.new(
 sign_action = ->(params) do
   response = ca.sign(params)
   if response.error?
-    [500, {'Content-Type' => 'text/plain'}, [response.error]]
+    [500, {'Content-Type' => 'text/plain'}, ["500 Internal Server Error (#{response.error})"]]
+  elsif response.denied?
+    [403, {'Content-Type' => 'text/plain'}, ["403 Forbidden (#{response.error})"]]
   else
     [303, {'Content-Type' => 'text/plain',
            'Location' => "/certificate/#{params[:cn]}"}, ["303 See Other"]]
@@ -31,20 +33,24 @@ end
 fetch_action = ->(params) do
   response = ca.fetch(params)
   if response.error?
-    [500, {'Content-Type' => 'text/plain'}, [response.error]]
+    [500, {'Content-Type' => 'text/plain'}, ["500 Internal Server Error (#{response.error})"]]
+  elsif response.denied?
+    [403, {'Content-Type' => 'text/plain'}, ["403 Forbidden (#{response.error})"]]
   elsif response.miss?
-    [404, {'Content-Type' => 'text/plain'}, ["404 Object Not Found"]]
+    [404, {'Content-Type' => 'text/plain'}, ["404 Not Found"]]
   else
-    [200, {'Content-Type' => 'text/plain'}, [response.pem]]
+    [200, {'Content-Type' => 'application/x-pem-file'}, [response.pem]]
   end
 end
 
 remove_action = ->(params) do
   response = ca.remove(params)
   if response.error?
-    [500, {'Content-Type' => 'text/plain'}, [response.error]]
+    [500, {'Content-Type' => 'text/plain'}, ["500 Internal Server Error (#{response.error})"]]
+  elsif response.denied?
+    [403, {'Content-Type' => 'text/plain'}, ["403 Forbidden (#{response.error})"]]
   elsif response.miss?
-    [404, {'Content-Type' => 'text/plain'}, ["404 Object Not Found"]]
+    [404, {'Content-Type' => 'text/plain'}, ["404 Not Found"]]
   else
     [200, {'Content-Type' => 'text/plain'}, ["200 OK"]]
   end
@@ -53,19 +59,18 @@ end
 router = ->(env) do
   req = Rack::Request.new(env)
   if req.path_info =~ /^\/certificate\/(.+)/
-    params = {
-      cn: $1,
-      ip: req.ip,
-      csr: req.params['csr'],
-    }
+    params = req.params.tap do |p|
+      p[:cn] = $1
+      p[:ip] = req.ip
+    end
     case req.request_method
       when 'POST' then sign_action.call(params)
       when 'GET' then fetch_action.call(params)
       when 'DELETE' then remove_action.call(params)
-      else [400, {'Content-Type' => 'text-plain'}, ["400 Unsupported operation #{req.request_method}"]]
+      else [405, {'Content-Type' => 'text-plain'}, ["405 Method Not Allowed"]]
     end
   else
-    [400, {'Content-Type' => 'text-plain'}, ["404 Bad route #{req.path_info}"]]
+    [501, {'Content-Type' => 'text-plain'}, ["501 Not Implemented"]]
   end
 end
 
