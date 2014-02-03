@@ -2,6 +2,10 @@ PATH
   remote: .
   specs:
     certmeister (0.2.3)
+      semver2 (~> 3.3)
+    certmeister-rack (0.2.3)
+      certmeister (= 0.2.3)
+      rack (~> 1.5)
     certmeister-redis (0.2.3)
       certmeister (= 0.2.3)
       redis-sentinel (~> 1.4)
@@ -10,6 +14,9 @@ GEM
   remote: http://rubygems.org/
   specs:
     diff-lcs (1.2.5)
+    rack (1.5.2)
+    rack-test (0.6.2)
+      rack (>= 1.0)
     rake (0.9.6)
     redis (3.0.7)
     redis-sentinel (1.4.2)
@@ -30,7 +37,8 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.5)
   certmeister!
+  certmeister-rack!
   certmeister-redis!
+  rack-test (~> 0.6)
   rake (~> 0)
   rspec (~> 2.14)
-  semver2 (~> 3.3)
