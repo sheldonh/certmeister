@@ -22,7 +22,7 @@ ca = Certmeister.new(
     sign_policy: sign_policy,
     fetch_policy: fetch_policy,
     remove_policy: remove_policy,
-    store: Certmeister::Redis::Store.new(Redis.new, "development"),
+    store: store,
     ca_cert: File.read("../fixtures/ca.crt"),
     ca_key: File.read("../fixtures/ca.key"),
   )
