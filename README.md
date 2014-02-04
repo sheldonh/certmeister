@@ -15,11 +15,13 @@ The reference access policy in use by Hetzner PTY Ltd is:
 
 This allows us the convenience of Puppet's autosign feature, without the horrendous security implications.
 
-Certmeister is the core of a fancy web service that does this:
+This repository currently builds three gems:
 
-```
-cat request/client.csr | openssl x509 -req -CA CA/ca.crt -CAkey CA/ca.key -CAcreateserial -addtrust clientAuth > CA/signed/<cn>.crt
-```
+* _certmeister_ - the CA, some off-the-shelf policy modules and an in-memory cert store
+* _certmeister-redis_ - a redis-backed store
+* _certmeister-rack_ - a rack application to provide an HTTP interface to the CA
+
+An example, using redis and rack and a policy that always allows requests, is available in [contrib/config.ru].
 
 To hit the service:
 
@@ -27,7 +29,7 @@ To hit the service:
 $ curl -L \
     -d "psk=secretkey" \
     -d "csr=$(perl -MURI::Escape -e 'print uri_escape(join("", <STDIN>));' < fixtures/client.csr)" \
-    http://certmeister.hetzner.co.za/certificate/axl.starjuice.net
+    http://localhost:9292/ca/certificate/axl.starjuice.net
 ```
 
 ## Testing
