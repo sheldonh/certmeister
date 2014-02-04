@@ -67,7 +67,7 @@ describe Certmeister::Rack::App do
         expect(last_response.status).to eql 303
       end
 
-      it "offers the same resource URI as Location" do
+      it "offers req.path as Location (to include rack builder mount point)" do
         expect(last_response.headers['Location']).to eql "/certificate/axl.starjuice.net"
       end
 
