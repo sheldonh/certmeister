@@ -23,7 +23,7 @@ describe Certmeister::Policy::Fcrdns do
   it "refuses to authenticate a request with an ip that does not have fcrdns that matches the cn" do
     response = subject.authenticate({cn: 'bad.example.com', ip: '127.0.0.1'})
     expect(response).to_not be_authenticated
-    expect(response.error).to eql "cn in unknown domain"
+    expect(response.error).to eql "cn does not match fcrdns"
   end
 
   it "authenticates any request with an ip that does not have fcrdns that matches the cn" do

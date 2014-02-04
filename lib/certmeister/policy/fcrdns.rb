@@ -14,7 +14,7 @@ module Certmeister
           elsif not request[:ip]
             Certmeister::Policy::Response.new(false, "missing ip")
           elsif not fcrdns_names(request[:ip]).include?(request[:cn])
-            Certmeister::Policy::Response.new(false, "cn in unknown domain")
+            Certmeister::Policy::Response.new(false, "cn does not match fcrdns")
           else
             Certmeister::Policy::Response.new(true, nil)
           end
