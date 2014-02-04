@@ -1,9 +1,10 @@
 PATH
   remote: ..
   specs:
-    certmeister (0.0.2)
-    certmeister-redis (0.0.2)
-      certmeister (= 0.0.2)
+    certmeister (0.2.3)
+      semver2 (~> 3.3)
+    certmeister-redis (0.2.3)
+      certmeister (= 0.2.3)
       redis-sentinel (~> 1.4)
 
 GEM
@@ -13,6 +14,7 @@ GEM
     redis (3.0.7)
     redis-sentinel (1.4.2)
       redis
+    semver2 (3.3.3)
 
 PLATFORMS
   ruby

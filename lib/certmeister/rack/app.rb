@@ -1,4 +1,5 @@
 require 'rack/request'
+require 'certmeister/rack/symbolic_hash_accessor'
 
 module Certmeister
 
@@ -35,9 +36,9 @@ module Certmeister
       private
 
       def sign_action(req)
-        response = @ca.sign(req.params)
+        response = @ca.sign(SymbolicHashAccessor.new(req.params))
         if response.hit?
-          redirect(req.path_info)
+          redirect(req.path)
         elsif response.denied?
           forbidden(response.error)
         else
@@ -46,7 +47,7 @@ module Certmeister
       end
 
       def fetch_action(req)
-        response = @ca.fetch(req.params)
+        response = @ca.fetch(SymbolicHashAccessor.new(req.params))
         if response.hit?
           ok(response.pem, 'application/x-pem-file')
         elsif response.miss?
@@ -59,7 +60,7 @@ module Certmeister
       end
 
       def remove_action(req)
-        response = @ca.remove(req.params)
+        response = @ca.remove(SymbolicHashAccessor.new(req.params))
         if response.hit?
           ok
         elsif response.miss?

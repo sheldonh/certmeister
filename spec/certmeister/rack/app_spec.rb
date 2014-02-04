@@ -43,15 +43,15 @@ describe Certmeister::Rack::App do
       end
 
       it "copies the cn into the params" do
-        expect(ca).to have_received(:sign).with hash_including("cn" => "axl.starjuice.net")
+        expect(ca).to have_received(:sign).with hash_including(cn: "axl.starjuice.net")
       end
 
       it "copies the ip into the params" do
-        expect(ca).to have_received(:sign).with hash_including("ip" => "192.168.1.2")
+        expect(ca).to have_received(:sign).with hash_including(ip: "192.168.1.2")
       end
 
       it "passes the form params into the CA" do
-        expect(ca).to have_received(:sign).with hash_including("csr" => "...csr...")
+        expect(ca).to have_received(:sign).with hash_including(csr: "...csr...")
       end
 
     end
@@ -136,15 +136,15 @@ describe Certmeister::Rack::App do
       end
 
       it "copies the cn into the params" do
-        expect(ca).to have_received(:fetch).with hash_including("cn" => "axl.starjuice.net")
+        expect(ca).to have_received(:fetch).with hash_including(cn: "axl.starjuice.net")
       end
 
       it "copies the ip into the params" do
-        expect(ca).to have_received(:fetch).with hash_including("ip" => "192.168.1.2")
+        expect(ca).to have_received(:fetch).with hash_including(ip: "192.168.1.2")
       end
 
       it "passes the form params into the CA" do
-        expect(ca).to have_received(:fetch).with hash_including("psk" => "...secret...")
+        expect(ca).to have_received(:fetch).with hash_including(psk: "...secret...")
       end
 
     end
@@ -246,15 +246,15 @@ describe Certmeister::Rack::App do
       end
 
       it "copies the cn into the params" do
-        expect(ca).to have_received(:remove).with hash_including("cn" => "axl.starjuice.net")
+        expect(ca).to have_received(:remove).with hash_including(cn: "axl.starjuice.net")
       end
 
       it "copies the ip into the params" do
-        expect(ca).to have_received(:remove).with hash_including("ip" => "192.168.1.2")
+        expect(ca).to have_received(:remove).with hash_including(ip: "192.168.1.2")
       end
 
       it "passes the form params into the CA" do
-        expect(ca).to have_received(:remove).with hash_including("authoritah" => "...warhammer...")
+        expect(ca).to have_received(:remove).with hash_including(authoritah: "...warhammer...")
       end
 
     end
