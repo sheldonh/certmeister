@@ -14,20 +14,19 @@ end
 namespace :bump do
   bump_version = ->(component) do
     sh 'bundle', 'exec', 'semver', 'inc', component
-    sh 'bundle'
-    sh 'bundle', 'exec', 'semver', 'format', "New version: v%M.%m.%p%s"
+    puts "Remember to update Gemfile.lock with bundle install"
   end
 
   desc 'Bump version [major]'
-  task :major => :build do
+  task :major do
     bump_version.call('major')
   end
   desc 'Bump version [minor]'
-  task :minor => :build do
+  task :minor do
     bump_version.call('minor')
   end
   desc 'Bump version [patch]'
-  task :patch => :build do
+  task :patch do
     bump_version.call('patch')
   end
 end
