@@ -48,3 +48,17 @@ redis-server --logfile /dev/null &
 rake spec
 kill %1; wait %1
 ```
+
+## Releasing
+
+If you work at Hetzner and need to release new versions of the gems, do this
+(obviously only after making sure the tests run and you have no uncommitted
+changes):
+
+```
+bundle exec rake bump:patch # or bump:minor or bump:major
+bundle
+git add .semver Gemfile.lock
+git commit -m "Bump to version $(bundle exec semver)"
+bundle exec release
+```
