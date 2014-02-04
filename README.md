@@ -21,7 +21,7 @@ This repository currently builds three gems:
 * _certmeister-redis_ - a redis-backed store
 * _certmeister-rack_ - a rack application to provide an HTTP interface to the CA
 
-An example, using redis and rack and a policy that always allows requests, is available in [contrib/config.ru](contrib/config.ru).
+An example, using redis and rack and enforcing Hetzner PTY Ltd's policy, is available in [contrib/config.ru](contrib/config.ru).
 
 To hit the service:
 

@@ -6,13 +6,22 @@ require 'certmeister/redis/store'
 require 'certmeister/rack/app'
 require 'redis'
 
-allow = Certmeister::Policy::Noop.new
+store = Certmeister::Redis::Store.new(Redis.new, "development")
+
+sign_policy =
+  Certmeister::Policy::ChainAll.new([
+    Certmeister::Policy::Domain.new(['host-h.net']),
+    Certmeister::Policy::Fcrdns.new,
+    Certmeister::Policy::Existing.new(store),
+  ])
+fetch_policy = Certmeister::Policy::Noop.new
+remove_policy = Certmeister::Policy::IP.new(['127.0.0.0/8'])
 
 ca = Certmeister.new(
   Certmeister::Config.new(
-    sign_policy: allow,
-    fetch_policy: allow,
-    remove_policy: allow,
+    sign_policy: sign_policy,
+    fetch_policy: fetch_policy,
+    remove_policy: remove_policy,
     store: Certmeister::Redis::Store.new(Redis.new, "development"),
     ca_cert: File.read("../fixtures/ca.crt"),
     ca_key: File.read("../fixtures/ca.key"),
