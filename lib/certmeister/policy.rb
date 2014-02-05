@@ -11,6 +11,13 @@ module Certmeister
       response.respond_to?(:authenticated?) and response.respond_to?(:error)
     end
 
+    def self.validate_policies(policies)
+      unless policies.is_a?(Enumerable) and policies.respond_to?(:size) and policies.size > 0 and
+          policies.all? { |policy| self.validate_authenticate_signature(policy) }
+        raise ArgumentError.new("enumerable collection of policies required")
+      end
+    end
+
   end
 
 end
