@@ -36,5 +36,7 @@ describe Certmeister::Policy::ChainAll do
     end
   end
 
+  it "uses the error message of the first encountered refusal in the chain"
+
 end
 
