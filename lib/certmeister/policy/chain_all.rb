@@ -6,14 +6,14 @@ module Certmeister
 
     class ChainAll
 
-      def initialize(policys)
-        validate_policys(policys)
-        @policys = policys
+      def initialize(policies)
+        validate_policies(policies)
+        @policies = policies
       end
 
       def authenticate(request)
         success = Certmeister::Policy::Response.new(true, nil)
-        @policys.inject(success) do |continue, policy|
+        @policies.inject(success) do |continue, policy|
           response = policy.authenticate(request)
           break response unless response.authenticated?
           continue
@@ -22,10 +22,10 @@ module Certmeister
 
       private
 
-      def validate_policys(policys)
-        unless policys.is_a?(Enumerable) and policys.respond_to?(:size) and policys.size > 0 and
-               policys.all? { |policy| Certmeister::Policy.validate_authenticate_signature(policy) }
-          raise ArgumentError.new("enumerable collection of policys required")
+      def validate_policies(policies)
+        unless policies.is_a?(Enumerable) and policies.respond_to?(:size) and policies.size > 0 and
+               policies.all? { |policy| Certmeister::Policy.validate_authenticate_signature(policy) }
+          raise ArgumentError.new("enumerable collection of policies required")
         end
       end
 

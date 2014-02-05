@@ -6,8 +6,8 @@ require 'certmeister/policy/chain_any'
 
 describe Certmeister::Policy::ChainAny do
 
-  it "must be configured with a list of policys" do
-    expected_error = "enumerable collection of policys required"
+  it "must be configured with a list of policies" do
+    expected_error = "enumerable collection of policies required"
     expect { Certmeister::Policy::ChainAny.new }.to raise_error(ArgumentError)
     expect { Certmeister::Policy::ChainAny.new(Certmeister::Policy::Noop.new) }.to raise_error(ArgumentError, expected_error)
     expect { Certmeister::Policy::ChainAny.new([]) }.to raise_error(ArgumentError, expected_error)
@@ -18,13 +18,13 @@ describe Certmeister::Policy::ChainAny do
     expect { policy.authenticate }.to raise_error(ArgumentError)
   end
 
-  it "authenticates a request that any of its chained policys authenticate" do
+  it "authenticates a request that any of its chained policies authenticate" do
     policy = Certmeister::Policy::ChainAny.new([Certmeister::Policy::Blackhole.new, Certmeister::Policy::Noop.new, Certmeister::Policy::Blackhole.new])
     response = policy.authenticate({anything: 'something'})
     expect(response).to be_authenticated
   end
 
-  it "refuses a request that none of its chained policys refuses" do
+  it "refuses a request that none of its chained policies refuses" do
     policy = Certmeister::Policy::ChainAll.new([ Certmeister::Policy::Blackhole.new, Certmeister::Policy::Blackhole.new])
     response = policy.authenticate({anything: 'something'})
     expect(response).to_not be_authenticated
