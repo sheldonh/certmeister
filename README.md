@@ -56,9 +56,8 @@ If you work at Hetzner and need to release new versions of the gems, do this
 changes):
 
 ```
-bundle exec rake bump:patch # or bump:minor or bump:major
+# edit lib/certmeister/version.rb
 bundle
-git add .semver Gemfile.lock
-git commit -m "Bump to version $(bundle exec semver)"
+git commit -m "Bump to version x.y.z" Gemfile.lock lib/certmeister/version.rb
 bundle exec release
 ```
