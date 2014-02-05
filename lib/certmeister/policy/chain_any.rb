@@ -4,7 +4,7 @@ module Certmeister
 
   module Policy
 
-    class ChainAll
+    class ChainAny
 
       def initialize(policys)
         validate_policys(policys)
@@ -12,10 +12,10 @@ module Certmeister
       end
 
       def authenticate(request)
-        success = Certmeister::Policy::Response.new(true, nil)
-        @policys.inject(success) do |continue, policy|
+        failure = Certmeister::Policy::Response.new(false, "no conditions satisifed")
+        @policys.inject(failure) do |continue, policy|
           response = policy.authenticate(request)
-          break response unless response.authenticated?
+          break response if response.authenticated?
           continue
         end
       end
