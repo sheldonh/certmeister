@@ -11,26 +11,6 @@ task :build => :spec do
   FileUtils.mv(Dir['*.gem'], 'pkg')
 end
 
-namespace :bump do
-  bump_version = ->(component) do
-    sh 'bundle', 'exec', 'semver', 'inc', component
-    puts "Remember to update Gemfile.lock with bundle install"
-  end
-
-  desc 'Bump version [major]'
-  task :major do
-    bump_version.call('major')
-  end
-  desc 'Bump version [minor]'
-  task :minor do
-    bump_version.call('minor')
-  end
-  desc 'Bump version [patch]'
-  task :patch do
-    bump_version.call('patch')
-  end
-end
-
 desc 'Tags version, pushes to remote, and pushes gem'
 task :release => :build do
   sh 'git', 'tag', '-m', "Released v#{Certmeister::VERSION}", "v#{Certmeister::VERSION}"
