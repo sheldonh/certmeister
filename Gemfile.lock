@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    certmeister (0.3.2)
-    certmeister-rack (0.3.2)
-      certmeister (= 0.3.2)
+    certmeister (0.4.0)
+    certmeister-rack (0.4.0)
+      certmeister (= 0.4.0)
       rack (~> 1.5)
-    certmeister-redis (0.3.2)
-      certmeister (= 0.3.2)
+    certmeister-redis (0.4.0)
+      certmeister (= 0.4.0)
       redis-sentinel (~> 1.4)
 
 GEM
