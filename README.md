@@ -58,6 +58,8 @@ changes):
 ```
 # edit lib/certmeister/version.rb
 bundle
-git commit -m "Bump to version x.y.z" Gemfile.lock lib/certmeister/version.rb
-bundle exec release
+git commit \
+  -m "Bump version to v$(bundle exec ruby -Ilib -rcertmeister -e 'puts Certmeister::VERSION')" \
+  Gemfile.lock lib/certmeister/version.rb
+bundle exec rake release
 ```
