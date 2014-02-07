@@ -8,14 +8,21 @@ require 'redis'
 
 store = Certmeister::Redis::Store.new(Redis.new, "development")
 
-sign_policy =
+sign_policy = Certmeister::Policy::ChainAny.new([
   Certmeister::Policy::ChainAll.new([
+    Certmeister::Policy::Existing.new(store),
     Certmeister::Policy::Domain.new(['host-h.net']),
     Certmeister::Policy::Fcrdns.new,
+  ]),
+  Certmeister::Policy::ChainAll.new([
     Certmeister::Policy::Existing.new(store),
-  ])
+    Certmeister::Policy::Domain.new(['example.com']),
+    Certmeister::Policy::IP.new(['192.168.0.0/23']),
+  ]),
+  Certmeister::Policy::IP.new(['127.0.0.1/32']),
+])
 fetch_policy = Certmeister::Policy::Noop.new
-remove_policy = Certmeister::Policy::IP.new(['127.0.0.0/8'])
+remove_policy = Certmeister::Policy::IP.new(['192.168.0.0/23', '127.0.0.1/32'])
 
 ca = Certmeister.new(
   Certmeister::Config.new(
