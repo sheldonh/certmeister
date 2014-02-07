@@ -100,6 +100,8 @@ describe Certmeister::Rack::App do
         expect(last_response.headers['Content-Type']).to eql 'text/plain'
       end
 
+      it "logs the denial"
+
     end
 
     context "on error" do
@@ -121,6 +123,8 @@ describe Certmeister::Rack::App do
       it "describes the body as text/plain" do
         expect(last_response.headers['Content-Type']).to eql 'text/plain'
       end
+
+      it "logs the denial"
 
     end
 
