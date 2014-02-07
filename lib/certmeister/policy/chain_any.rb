@@ -12,11 +12,10 @@ module Certmeister
       end
 
       def authenticate(request)
-        failure = Certmeister::Policy::Response.new(false, "no conditions satisifed")
-        @policies.inject(failure) do |continue, policy|
+        @policies.inject(nil) do |continue, policy|
           response = policy.authenticate(request)
           break response if response.authenticated?
-          continue
+          continue or response
         end
       end
 

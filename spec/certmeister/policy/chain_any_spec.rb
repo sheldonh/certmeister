@@ -25,13 +25,19 @@ describe Certmeister::Policy::ChainAny do
   end
 
   it "refuses a request that none of its chained policies refuses" do
-    policy = Certmeister::Policy::ChainAll.new([ Certmeister::Policy::Blackhole.new, Certmeister::Policy::Blackhole.new])
+    policy = Certmeister::Policy::ChainAny.new([ Certmeister::Policy::Blackhole.new, Certmeister::Policy::Blackhole.new])
     response = policy.authenticate({anything: 'something'})
     expect(response).to_not be_authenticated
-    expect(response.error).to eql "blackholed"
   end
 
-  it "uses the error message of the last encountered refusal in the chain"
+  it "uses the error message of the first encountered refusal in the chain" do
+    policy = Certmeister::Policy::ChainAny.new([
+      Certmeister::Policy::Domain.new(['unmatched.com']),
+      Certmeister::Policy::Blackhole.new,
+    ])
+    response = policy.authenticate({cn: 'wrongdomain.com'})
+    expect(response.error).to eql 'cn in unknown domain'
+  end
 
 end
 
