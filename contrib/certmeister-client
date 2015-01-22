@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-DEFAULT_SERVICE=http://certmeister.hetzner.co.za
+DEFAULT_SERVICE=http://certmeister.hetzner.co.za/certificate
 
 usage() {
 	echo "usage: certmeister-client create /path/to/save/key.pem /path/to/save/crt.pem"
@@ -40,7 +40,7 @@ type -p curl >/dev/null
 type -p openssl >/dev/null
 perl -MURI::Escape -e 'print uri_escape(" ")' >/dev/null
 hostname=${CERTMEISTER_HOSTNAME:=$(hostname --fqdn)}
-uri=${CERTMEISTER_SERVICE:=$DEFAULT_SERVICE}/certificate/$hostname
+uri=${CERTMEISTER_SERVICE:=$DEFAULT_SERVICE}/$hostname
 
 [ $# -gt 0 ] || usage
 command="$1"
