@@ -12,7 +12,9 @@ module Certmeister
       end
 
       def authenticate(request)
-        if @store.fetch(request[:cn]).nil?
+        if not request[:cn]
+	  Certmeister::Policy::Response.new(false, "missing cn")
+        elsif @store.fetch(request[:cn]).nil?
           Certmeister::Policy::Response.new(true, nil)
         else
           Certmeister::Policy::Response.new(false, "certificate for cn already exists")

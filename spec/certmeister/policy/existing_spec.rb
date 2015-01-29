@@ -17,6 +17,12 @@ describe Certmeister::Policy::Existing do
     expect { subject.authenticate }.to raise_error(ArgumentError)
   end
 
+  it "refuses to authenticate a request with a missing cn" do
+    response = subject.authenticate(cn: nil)
+    expect(response).to_not be_authenticated
+    expect(response.error).to eql "missing cn"
+  end
+
   context "when the store contains a cert for axl.hetzner.africa" do
 
     subject { Certmeister::Policy::Existing.new(Certmeister::InMemoryStore.new({"axl.hetzner.africa" => "...cert..."})) }
