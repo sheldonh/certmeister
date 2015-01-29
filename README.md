@@ -15,10 +15,9 @@ The reference access policy in use by Hetzner PTY Ltd is:
 
 This allows us the convenience of Puppet's autosign feature, without the horrendous security implications.
 
-This repository currently builds three gems:
+This repository currently builds two gems:
 
 * _certmeister_ - the CA, some off-the-shelf policy modules and an in-memory cert store
-* _certmeister-redis_ - a redis-backed store
 * _certmeister-rack_ - a rack application to provide an HTTP interface to the CA
 
 An example, using redis and rack and enforcing Hetzner PTY Ltd's policy, is available in [contrib/config.ru](contrib/config.ru).
@@ -34,19 +33,8 @@ $ curl -L \
 
 ## Testing
 
-Because we test both certmeister and certmeister-redis with `rake spec`, you need redis up if you want to run the tests. It's easy:
-
-* Install redis-2.8.4 or later.
-* Start redis.
-* Run tests.
-* Stop redis.
-
 ```
-sudo yum install -y ansible
-sudo ansible-playbook -i contrib/hosts contrib/redis.yml
-redis-server --logfile /dev/null &
 rake spec
-kill %1; wait %1
 ```
 
 ## Releasing
