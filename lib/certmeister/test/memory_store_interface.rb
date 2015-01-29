@@ -28,21 +28,21 @@ module Certmeister
 
         it "deletes certificates by CN (common name)" do
           subject.store('axl.hetzner.africa', "cert")
-          expect(subject.remove('axl.hetzner.africa')).to be_true
+          expect(subject.remove('axl.hetzner.africa')).to be true
           expect(subject.fetch('axl.hetzner.africa')).to be_nil
         end
 
         it "returns false when removing a non-existent CN" do
-          expect(subject.remove('axl.hetzner.africa')).to be_false
+          expect(subject.remove('axl.hetzner.africa')).to be false
         end
 
         it "returns true from health_check when healthy" do
-          expect(subject.health_check).to be_true
+          expect(subject.health_check).to be true
         end
 
         it "returns false from health_check when not healthy" do
           subject.send(:break!)
-          expect(subject.health_check).to be_false
+          expect(subject.health_check).to be false
         end
 
       end

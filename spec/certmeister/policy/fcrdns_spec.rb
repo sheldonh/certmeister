@@ -34,7 +34,7 @@ describe Certmeister::Policy::Fcrdns do
   describe "error handling" do
 
     it "refuses to authenticate a request when a DNS failure occurs" do
-      Resolv::DNS.any_instance.stub(:getnames).with('nonsense').and_raise(Resolv::ResolvError.new("cannot interpret as address: nonsense"))
+      allow_any_instance_of(Resolv::DNS).to receive(:getnames).with('nonsense').and_raise(Resolv::ResolvError.new("cannot interpret as address: nonsense"))
       response = subject.authenticate({cn: 'localhost', ip: 'nonsense'})
       expect(response).to_not be_authenticated
       expect(response.error).to eql "DNS error (cannot interpret as address: nonsense)"

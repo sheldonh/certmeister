@@ -23,10 +23,10 @@ describe Certmeister::Response do
     end
 
     it "offers appropriate boolean flags" do
-      expect(subject.hit?).to be_false
-      expect(subject.miss?).to be_false
-      expect(subject.denied?).to be_false
-      expect(subject.error?).to be_true
+      expect(subject.hit?).to be false
+      expect(subject.miss?).to be false
+      expect(subject.denied?).to be false
+      expect(subject.error?).to be true
     end
 
   end
@@ -44,10 +44,10 @@ describe Certmeister::Response do
     end
 
     it "offers appropriate boolean flags" do
-      expect(subject.hit?).to be_false
-      expect(subject.miss?).to be_false
-      expect(subject.denied?).to be_true
-      expect(subject.error?).to be_false
+      expect(subject.hit?).to be false
+      expect(subject.miss?).to be false
+      expect(subject.denied?).to be true
+      expect(subject.error?).to be false
     end
 
   end
@@ -65,10 +65,10 @@ describe Certmeister::Response do
     end
 
     it "offers appropriate boolean flags" do
-      expect(subject.hit?).to be_false
-      expect(subject.miss?).to be_true
-      expect(subject.denied?).to be_false
-      expect(subject.error?).to be_false
+      expect(subject.hit?).to be false
+      expect(subject.miss?).to be true
+      expect(subject.denied?).to be false
+      expect(subject.error?).to be false
     end
 
   end
@@ -87,10 +87,10 @@ describe Certmeister::Response do
     end
 
     it "offers appropriate boolean flags" do
-      expect(subject.hit?).to be_true
-      expect(subject.miss?).to be_false
-      expect(subject.denied?).to be_false
-      expect(subject.error?).to be_false
+      expect(subject.hit?).to be true
+      expect(subject.miss?).to be false
+      expect(subject.denied?).to be false
+      expect(subject.error?).to be false
     end
 
   end
