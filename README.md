@@ -20,6 +20,12 @@ This repository currently builds two gems:
 * _certmeister_ - the CA, some off-the-shelf policy modules and an in-memory cert store
 * _certmeister-rack_ - a rack application to provide an HTTP interface to the CA
 
+Only an in-memory store is provided. Others are available as separate gems:
+
+* [certmeister-dynamodb](https://github.com/sheldonh/certmeister-dynamodb)
+* [certmeister-pg](https://github.com/sheldonh/certmeister-pg)
+* [certmeister-redis](https://github.com/sheldonh/certmeister-redis)
+
 An example, using redis and rack and enforcing Hetzner PTY Ltd's policy, is available in [contrib/config.ru](contrib/config.ru).
 
 To hit the service:
