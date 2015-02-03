@@ -55,8 +55,5 @@ bundle
 git commit \
   -m "Bump version to v$(bundle exec ruby -Ilib -rcertmeister -e 'puts Certmeister::VERSION')" \
   Gemfile.lock lib/certmeister/version.rb
-git push
-git tag v$(bundle exec ruby -Ilib -rcertmeister -e 'puts Certmeister::VERSION')
-git push --tags
 bundle exec rake release
 ```
