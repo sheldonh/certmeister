@@ -9,25 +9,25 @@ describe Certmeister::Policy::Fcrdns do
   end
 
   it "refuses to authenticate a request with a missing cn" do
-    response = subject.authenticate({ip: '127.0.0.1'})
+    response = subject.authenticate({ip: '8.8.8.8'})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "missing cn"
   end
 
   it "refuses to authenticate a request with a missing ip" do
-    response = subject.authenticate({cn: 'localhost'})
+    response = subject.authenticate({cn: 'google-public-dns-a.google.com'})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "missing ip"
   end
 
   it "refuses to authenticate a request with an ip that does not have fcrdns that matches the cn" do
-    response = subject.authenticate({cn: 'bad.example.com', ip: '127.0.0.1'})
+    response = subject.authenticate({cn: 'google-public-dns-a.google.com', ip: '127.0.0.1'})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "cn does not match fcrdns"
   end
 
-  it "authenticates any request with an ip that does not have fcrdns that matches the cn" do
-    response = subject.authenticate({cn: 'localhost', ip: '127.0.0.1'})
+  it "authenticates any request with an ip that has fcrdns that matches the cn" do
+    response = subject.authenticate({cn: 'google-public-dns-a.google.com', ip: '8.8.8.8'})
     expect(response).to be_authenticated
   end
 
