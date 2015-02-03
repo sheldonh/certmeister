@@ -18,4 +18,8 @@ module CertmeisterConfigHelper
     Certmeister::Config.new(valid_config_options)
   end
 
+  def self.custom_config(options)
+    Certmeister::Config.new(valid_config_options.merge(options))
+  end
+
 end
