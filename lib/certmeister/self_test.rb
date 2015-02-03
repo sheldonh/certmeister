@@ -10,23 +10,28 @@ module Certmeister
 
     def test(req = {cn: 'test', ip: '127.0.0.1'})
       begin
-        res = @ca.remove(req)
-        res.hit? or res.miss? or raise "Test certificate remove failed: #{res.error}"
-
-        csr = get_csr("C=ZA, ST=Western Cape, L=Cape Town, O=Hetzner PTY Ltd, CN=#{req[:cn]}")
-        res = @ca.sign(cn: 'test', csr: csr.to_pem, ip: '127.0.0.1')
-        res.hit? or raise "Test certificate signing failed: #{res.error}"
-
-        res = @ca.fetch(cn: 'test', ip: '127.0.0.1')
-        res.hit? or raise "Test certificate fetch failed: #{res.error}"
-
-        cert = OpenSSL::X509::Certificate.new(res.pem)
-        cert.subject.to_s =~ /CN=#{req[:cn]}/ or raise "Test certificate common name mismatch"
-
+        test!(req = {cn: 'test', ip: '127.0.0.1'})
         Result.new(true, {message: "OK"})
       rescue Exception => e
         Result.new(false, {message: e.message})
       end
+    end
+
+    def test!(req = {cn: 'test', ip: '127.0.0.1'})
+      res = @ca.remove(req)
+      res.hit? or res.miss? or raise "Test certificate remove failed: #{res.error}"
+
+      csr = get_csr("C=ZA, ST=Western Cape, L=Cape Town, O=Hetzner PTY Ltd, CN=#{req[:cn]}")
+      res = @ca.sign(cn: 'test', csr: csr.to_pem, ip: '127.0.0.1')
+      res.hit? or raise "Test certificate signing failed: #{res.error}"
+
+      res = @ca.fetch(cn: 'test', ip: '127.0.0.1')
+      res.hit? or raise "Test certificate fetch failed: #{res.error}"
+
+      cert = OpenSSL::X509::Certificate.new(res.pem)
+      cert.subject.to_s =~ /CN=#{req[:cn]}/ or raise "Test certificate common name mismatch"
+
+      nil
     end
 
     private
