@@ -2,8 +2,10 @@ module Certmeister
 
   class SelfTest
 
-    def initialize(ca)
+    # Pass in PEM-encoded key for fast tests that don't need lots of entropy.
+    def initialize(ca, key = nil)
       @ca = ca
+      @key = key
     end
 
     def test(req = {cn: 'test', ip: '127.0.0.1'})
@@ -30,13 +32,19 @@ module Certmeister
     private
 
     def get_csr(subject)
-      key = OpenSSL::PKey::RSA.new(4096)
+      key = get_key
       csr = OpenSSL::X509::Request.new
       csr.version = 0
       csr.subject = OpenSSL::X509::Name.parse(subject)
       csr.public_key = key.public_key
       csr.sign key, OpenSSL::Digest::SHA1.new
       csr
+    end
+
+    def get_key
+      OpenSSL::PKey::RSA.new(@key || 4096).tap do |key|
+        @key ||= key.to_pem
+      end
     end
 
     class Result

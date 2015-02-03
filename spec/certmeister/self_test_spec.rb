@@ -5,12 +5,13 @@ require 'certmeister'
 
 describe Certmeister::SelfTest do
 
+  subject { Certmeister::SelfTest.new(ca, File.read('fixtures/client.key')) }
+
   describe "#test(req = {cn: 'test', ip: '127.0.0.1'})" do
 
     context "when the CA is functioning correctly" do
 
       let(:ca) { Certmeister.new(CertmeisterConfigHelper::valid_config) }
-      subject { Certmeister::SelfTest.new(ca) }
 
       it "returns success" do
         res = subject.test(cn: 'test', ip: '127.0.0.1')
@@ -23,7 +24,6 @@ describe Certmeister::SelfTest do
 
       let(:store) { Certmeister::InMemoryStore.new.tap { |o| o.send(:break!) } }
       let(:ca) { Certmeister.new(CertmeisterConfigHelper::custom_config(store: store)) }
-      subject { Certmeister::SelfTest.new(ca) }
 
       it "returns an error" do
         res = subject.test(cn: 'test', ip: '127.0.0.1')
