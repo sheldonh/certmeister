@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'rack/test'
 
 require 'certmeister'
-require 'certmeister/rack/app'
+require 'certmeister/rack'
 
 describe Certmeister::Rack::App do
 

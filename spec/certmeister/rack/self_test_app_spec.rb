@@ -3,7 +3,7 @@ require 'rack/test'
 require 'helpers/certmeister_config_helper'
 
 require 'certmeister'
-require 'certmeister/rack/self_test_app'
+require 'certmeister/rack'
 
 describe Certmeister::Rack::SelfTestApp do
 
