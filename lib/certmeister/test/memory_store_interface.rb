@@ -32,6 +32,21 @@ module Certmeister
           expect(subject.fetch('axl.hetzner.africa')).to be_nil
         end
 
+        it "is enumerable" do
+          expect(subject).to be_a(Enumerable)
+        end
+
+        it "iterates certificates by cn" do
+          subject.store('axl.hetzner.africa', "hetzner-cert")
+          subject.store('axl.starjuice.net', "hetzner-cert")
+          received = {}
+          subject.each do |cn, cert|
+            expect(received).to_not include(cn)
+            received[cn] = cert
+          end
+          expect(received).to eql({'axl.hetzner.africa' => "hetzner-cert", 'axl.starjuice.net' => "hetzner-cert"})
+        end
+
         it "returns false when removing a non-existent CN" do
           expect(subject.remove('axl.hetzner.africa')).to be false
         end

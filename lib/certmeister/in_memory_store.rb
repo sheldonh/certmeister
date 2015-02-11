@@ -4,6 +4,8 @@ module Certmeister
 
   class InMemoryStore
 
+    include Enumerable
+
     def initialize(certs = {})
       @certs = certs
       @healthy = true
@@ -22,6 +24,12 @@ module Certmeister
     def remove(cn)
       fail_if_unhealthy
       !!@certs.delete(cn)
+    end
+
+    def each
+      @certs.each do |cn, cert|
+        yield cn, cert
+      end
     end
 
     def health_check
