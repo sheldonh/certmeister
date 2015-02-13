@@ -15,10 +15,13 @@ The reference access policy in use by Hetzner PTY Ltd is:
 
 This allows us the convenience of Puppet's autosign feature, without the horrendous security implications.
 
-This repository currently builds two gems:
+This repository currently builds one gem:
 
 * _certmeister_ - the CA, some off-the-shelf policy modules and an in-memory cert store
-* _certmeister-rack_ - a rack application to provide an HTTP interface to the CA
+
+A rack application to provide an HTTP interface to the CA is available as a separate gem:
+
+* [certmeister-rack](https://github.com/sheldonh/certmeister-rack)
 
 Only an in-memory store is provided. Others are available as separate gems:
 
@@ -26,16 +29,8 @@ Only an in-memory store is provided. Others are available as separate gems:
 * [certmeister-pg](https://github.com/sheldonh/certmeister-pg)
 * [certmeister-redis](https://github.com/sheldonh/certmeister-redis)
 
-An example, using redis and rack and enforcing Hetzner PTY Ltd's policy, is available in [contrib/config.ru](contrib/config.ru).
-
-To hit the service:
-
-```
-$ curl -L \
-    -d "psk=secretkey" \
-    -d "csr=$(perl -MURI::Escape -e 'print uri_escape(join("", <STDIN>));' < fixtures/client.csr)" \
-    http://localhost:9292/ca/certificate/axl.starjuice.net
-```
+An example, using redis and rack and enforcing Hetzner PTY Ltd's policy, is available in the `contrib` subdirectory of the
+[certmeister-rack](https://github.com/sheldonh/certmeister-rack) source.
 
 ## Testing
 
