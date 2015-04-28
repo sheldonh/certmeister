@@ -201,5 +201,14 @@ describe Certmeister do
 
   end
 
+  describe "#ca_cert_pem" do
+
+    it "exposes the CA certificate in PEM format" do
+      ca = Certmeister.new(CertmeisterConfigHelper::valid_config)
+      expect(ca.ca_cert_pem).to match(/-----BEGIN CERTIFICATE-----/)
+    end
+
+  end
+
 end
 

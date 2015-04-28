@@ -58,6 +58,10 @@ module Certmeister
       end
     end
 
+    def ca_cert_pem
+      @ca_cert.to_pem
+    end
+
     private
 
     def subject_to_policy(policy, request, &block)
