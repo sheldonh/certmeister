@@ -29,6 +29,8 @@ module Certmeister
             Certmeister::Policy::Response.new(true, nil)
           end
         end
+      rescue OpenSSL::X509::RequestError => e
+        Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
       end
 
       private

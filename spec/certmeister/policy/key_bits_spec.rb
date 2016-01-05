@@ -26,21 +26,21 @@ describe Certmeister::Policy::KeyBits do
   end
 
   it "refuses to authenticate an invalid request" do
-    pem = File.read('fixtures/kbits_1024.csr')
+    pem = "bad input"
     response = subject.authenticate({pem: pem})
     expect(response).to_not be_authenticated
-    expect(response.error).to eql "weak key"
+    expect(response.error).to eql "invalid pem (not enough data)"
   end
 
   it "refuses to authenticate a request for a key with too few bits" do
-    pem = File.read('fixtures/kbits_1024.csr')
+    pem = File.read('fixtures/sha256_1024bit.csr')
     response = subject.authenticate({pem: pem})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "weak key"
   end
 
   it "authenticates a request for a key with sufficient bits" do
-    pem = File.read('fixtures/kbits_4096.csr')
+    pem = File.read('fixtures/sha256_4096bit.csr')
     response = subject.authenticate({pem: pem})
     expect(response).to be_authenticated
   end
