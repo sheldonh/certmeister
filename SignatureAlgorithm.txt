@@ -1,0 +1,28 @@
+Feature: Signature algorithm policy
+
+	As the operator of a conditionally autosigning certification authority
+	When deciding whether to sign a certificate
+	I want to reject certificate signing requests with weak signature algorithms
+	In order to enforce the use of strong cryptography across our network.
+
+Desired rspec output:
+
+	Certmeister::Policy::SignatureAlgorithm
+	  may be configured with a set of strong signature algorithms
+	  defaults to ["sha256"] as the set of strong signature algorithms
+	  demands a request
+	  refuses to authenticate a request with a missing pem
+	  refuses to authenticate an invalid pem
+	  refuses to authenticate a request with a weak signature algorithm
+	  authenticates a request with a strong signature algorithm
+
+Use spec/certmeister/policy/key_bits_spec.rb as a guide to specifying the behaviour.
+
+Use lib/certmeister/policy/key_bits.rb as a guide to implementing the behaviour.
+
+You may find these fixtures useful:
+
+	fixtures/sha1_4096bit.csr
+	fixtures/sha256_4096bit.csr
+
+The signature algorithm of a CSR is provided by the OpenSSL::X509::Request#signature_algorithm method.
