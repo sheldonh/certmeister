@@ -25,7 +25,7 @@ describe Certmeister::Policy::KeyBits do
     expect(response.error).to eql "missing pem"
   end
 
-  it "refuses to authenticate an invalid request" do
+  it "refuses to authenticate an invalid pem" do
     pem = "bad input"
     response = subject.authenticate({pem: pem})
     expect(response).to_not be_authenticated
