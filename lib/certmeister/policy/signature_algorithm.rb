@@ -3,31 +3,31 @@ require 'openssl'
 
 module Certmeister
 
-	module Policy
+  module Policy
 
-		class SignatureAlgorithm
+    class SignatureAlgorithm
 
 			DEFAULT_SIGNATURE_ALGORITHMS = ["sha256", "sha384", "sha512"]
 
 			attr_reader :signature_algorithms
       
    
-  			def initialize(signature_algorithms = DEFAULT_SIGNATURE_ALGORITHMS)
-    			validate_signature_algorithms(signature_algorithms)
-        		@signature_algorithms = signature_algorithms
-    		end
+  		def initialize(signature_algorithms = DEFAULT_SIGNATURE_ALGORITHMS)
+    		validate_signature_algorithms(signature_algorithms)
+        @signature_algorithms = signature_algorithms
+    	end
 
-        def authenticate(request)
-          if not request[:pem]
-            Certmeister::Policy::Response.new(false, "missing pem")
+      def authenticate(request)
+        if not request[:pem]
+          Certmeister::Policy::Response.new(false, "missing pem")
+        else
+          cert = OpenSSL::X509::Request.new(request[:pem])
+          signature_algorithm = cert.signature_algorithm
+          if signature_algorithm.include? "WithRSAEncryption"
+            signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
           else
-            cert = OpenSSL::X509::Request.new(request[:pem])
-            signature_algorithm = cert.signature_algorithm
-            if signature_algorithm.include? "WithRSAEncryption"
-              signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
-            else
-              Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm")
-            end              
+            Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm")
+          end              
             if @signature_algorithms.include? signature_algorithm
               Certmeister::Policy::Response.new(true, nil)
             else
@@ -52,8 +52,8 @@ module Certmeister
 
 			end
 
-		end
+    end
 
-	end
+  end
 
 end
