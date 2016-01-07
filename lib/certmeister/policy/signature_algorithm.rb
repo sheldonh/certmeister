@@ -11,7 +11,6 @@ module Certmeister
 
       attr_reader :signature_algorithms
       
-   
       def initialize(signature_algorithms = DEFAULT_SIGNATURE_ALGORITHMS)
         validate_signature_algorithms(signature_algorithms)
         @signature_algorithms = signature_algorithms
