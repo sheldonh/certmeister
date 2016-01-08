@@ -18,23 +18,15 @@ module Certmeister
 
       def authenticate(request)
         if not request[:pem]
-          Certmeister::Policy::Response.new(false, "missing pem")
+          return Certmeister::Policy::Response.new(false, "missing pem")
         else
           cert = OpenSSL::X509::Request.new(request[:pem])
           signature_algorithm = cert.signature_algorithm
-          if signature_algorithm.include? "WithRSAEncryption"
-            signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
-          else
-            Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm")
-          end              
-          if @signature_algorithms.include? signature_algorithm
-            Certmeister::Policy::Response.new(true, nil)
-          else
-            Certmeister::Policy::Response.new(false, "weak signature algorithm")
-          end
+          signature_algorithm = check_for_supported_signature_algorithm(signature_algorithm)
+          check_signature_algorithm_strength(signature_algorithm)
         end
       rescue OpenSSL::X509::RequestError => e
-        Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
+        return Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
       end
 
       private
@@ -49,6 +41,23 @@ module Certmeister
           end
         end
       end
+      
+      def check_for_supported_signature_algorithm(signature_algorithm)
+        if signature_algorithm.include? "WithRSAEncryption"
+          signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
+        else
+          return Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm")
+        end
+        return signature_algorithm
+      end
+
+      def check_signature_algorithm_strength(signature_algorithm)
+        if @signature_algorithms.include? signature_algorithm
+          return Certmeister::Policy::Response.new(true, nil)
+        else
+          return Certmeister::Policy::Response.new(false, "weak signature algorithm")
+        end
+      end  
 
     end
 
