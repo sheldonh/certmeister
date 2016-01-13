@@ -45,6 +45,11 @@ describe Certmeister::Policy::SignatureAlgorithm do
     expect(response).to be_authenticated
   end
 
-  it "refuses to authenticate a request with an unknown/unsupported signature algorithm"
+  it "refuses to authenticate a request with an unknown/unsupported signature algorithm (ecdsa-with-SHA384)" do
+    pem = File.read('fixtures/ecdsa.csr')
+    response = subject.authenticate({pem: pem})
+    expect(response).to_not be_authenticated
+    expect(response.error).to eql "unknown/unsupported signature algorithm (ecdsa-with-SHA384)"
+  end
 
 end

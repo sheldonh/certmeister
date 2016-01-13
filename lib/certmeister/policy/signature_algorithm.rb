@@ -22,8 +22,11 @@ module Certmeister
         else
           cert = OpenSSL::X509::Request.new(request[:pem])
           signature_algorithm = cert.signature_algorithm
-          signature_algorithm = check_for_supported_signature_algorithm(signature_algorithm)
-          check_signature_algorithm_strength(signature_algorithm)
+          if signature_algorithm = check_for_supported_signature_algorithm(signature_algorithm)
+            check_signature_algorithm_strength(signature_algorithm)
+          else
+            return Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm (#{cert.signature_algorithm})")
+          end
         end
       rescue OpenSSL::X509::RequestError => e
         return Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
@@ -44,11 +47,9 @@ module Certmeister
       
       def check_for_supported_signature_algorithm(signature_algorithm)
         if signature_algorithm.include? "WithRSAEncryption"
-          signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
-        else
-          return Certmeister::Policy::Response.new(false, "unknown/unsupported signature algorithm")
+          return signature_algorithm = signature_algorithm.sub("WithRSAEncryption", "")
         end
-        return signature_algorithm
+
       end
 
       def check_signature_algorithm_strength(signature_algorithm)
