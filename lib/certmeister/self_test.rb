@@ -42,7 +42,7 @@ module Certmeister
       csr.version = 0
       csr.subject = OpenSSL::X509::Name.parse(subject)
       csr.public_key = key.public_key
-      csr.sign key, OpenSSL::Digest::SHA1.new
+      csr.sign key, OpenSSL::Digest::SHA256.new
       csr
     end
 
