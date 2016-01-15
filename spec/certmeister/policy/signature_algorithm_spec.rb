@@ -19,35 +19,35 @@ describe Certmeister::Policy::SignatureAlgorithm do
     expect { subject.authenticate }.to raise_error(ArgumentError)
   end
 
-  it "refuses to authenticate a request with a missing pem" do
+  it "refuses to authenticate a request with a missing csr" do
     response = subject.authenticate({anything: 'something'})
     expect(response).to_not be_authenticated
-    expect(response.error).to eql "missing pem"
+    expect(response.error).to eql "missing csr"
   end
 
-  it "refuses to authenticate an invalid pem" do
+  it "refuses to authenticate an invalid csr" do
     pem = "bad input"
-    response = subject.authenticate({pem: pem})
+    response = subject.authenticate({csr: pem})
     expect(response).to_not be_authenticated
-    expect(response.error).to eql "invalid pem (not enough data)"
+    expect(response.error).to eql "invalid csr (not enough data)"
   end
 
   it "refuses to authenticate a request with a weak signature algorithm" do  
     pem = File.read('fixtures/sha1_4096bit.csr')
-    response = subject.authenticate({pem: pem})
+    response = subject.authenticate({csr: pem})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "weak signature algorithm"
   end
 
   it "authenticates a request with a strong signature algorithm" do
     pem = File.read('fixtures/sha256_4096bit.csr')
-    response = subject.authenticate({pem: pem})
+    response = subject.authenticate({csr: pem})
     expect(response).to be_authenticated
   end
 
   it "refuses to authenticate a request with an unknown/unsupported signature algorithm" do
     pem = File.read('fixtures/ecdsa.csr')
-    response = subject.authenticate({pem: pem})
+    response = subject.authenticate({csr: pem})
     expect(response).to_not be_authenticated
     expect(response.error).to eql "unknown/unsupported signature algorithm (ecdsa-with-SHA384)"
   end

@@ -17,10 +17,10 @@ module Certmeister
       end
 
       def authenticate(request)
-        if not request[:pem]
-          Certmeister::Policy::Response.new(false, "missing pem")
+        if not request[:csr]
+          Certmeister::Policy::Response.new(false, "missing csr")
         else
-          cert = OpenSSL::X509::Request.new(request[:pem])
+          cert = OpenSSL::X509::Request.new(request[:csr])
           pkey = cert.public_key
           kbits = pkey.n.num_bytes * 8
           if kbits < @min_key_bits
@@ -30,7 +30,7 @@ module Certmeister
           end
         end
       rescue OpenSSL::X509::RequestError => e
-        Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
+        Certmeister::Policy::Response.new(false, "invalid csr (#{e.message})")
       end
 
       private

@@ -17,10 +17,10 @@ module Certmeister
       end
 
       def authenticate(request)
-        if not request[:pem]
-          return Certmeister::Policy::Response.new(false, "missing pem")
+        if not request[:csr]
+          return Certmeister::Policy::Response.new(false, "missing csr")
         else
-          cert = OpenSSL::X509::Request.new(request[:pem])
+          cert = OpenSSL::X509::Request.new(request[:csr])
           signature_algorithm = cert.signature_algorithm
           if signature_algorithm = check_for_supported_signature_algorithm(signature_algorithm)
             check_signature_algorithm_strength(signature_algorithm)
@@ -29,7 +29,7 @@ module Certmeister
           end
         end
       rescue OpenSSL::X509::RequestError => e
-        return Certmeister::Policy::Response.new(false, "invalid pem (#{e.message})")
+        return Certmeister::Policy::Response.new(false, "invalid csr (#{e.message})")
       end
 
       private
